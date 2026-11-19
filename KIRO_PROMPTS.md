@@ -22,7 +22,7 @@ Spec を作ってください。名前は「repo-and-ci」。
 要件:
 - npm workspaces のモノレポの空の骨組み(structure.md の通り)。TypeScript、ESLint、Prettier、Vitest を共通設定にする
 - packages/core に WebSocket のメッセージ型だけを先に定義する(部屋一覧、参加、退出、絵の送信、AI のコメント・お題・カード、エラー)。3人の作業の約束ごとになるので、型の一覧を README に表で書く
-- MIT ライセンスの LICENSE ファイルを置く
+- LICENSE(MIT)は作成済みなので変更しない
 - .gitignore を作る。ただし .kiro/ は絶対に無視しない
 - GitHub Actions:
   - pull request ごと: lint、型チェック、Vitest、infra の cdk synth
