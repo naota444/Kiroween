@@ -1,0 +1,53 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 ルートの共通設定ファイルを作る": [
+      {
+        "executionId": "06f06cc6-eb62-4e43-8d20-6da52f892ffb",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795266561081
+      },
+      {
+        "executionId": "06f06cc6-eb62-4e43-8d20-6da52f892ffb",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795266946887
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795267717088
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271611201
+      }
+    ],
+    "7.1 ルートの `.gitignore` を作る": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271611333
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271645764
+      }
+    ],
+    "7. 【トラック C】.gitignore": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271645801
+      }
+    ],
+    "1.2 5つのワークスペースパッケージと `tests/` の骨組みを作る": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271646189
+      }
+    ]
+  }
+}
