@@ -99,7 +99,7 @@
     - _Requirements: 2.13, 2.14_
 
 - [ ] 6. 【トラック B】infra: GithubOidcStack
-  - [ ] 6.1 `GithubOidcStack` を実装する
+  - [x] 6.1 `GithubOidcStack` を実装する
     - `infra/lib/github-oidc-stack.ts` に作る。コンテキスト `githubOidcProviderArn` があれば `OidcProviderNative.fromOidcProviderArn`、なければ `OidcProviderNative`（URL `https://token.actions.githubusercontent.com`、`clientIds: ['sts.amazonaws.com']`）。使用中の `aws-cdk-lib` で `OidcProviderNative` が使えなければ `OpenIdConnectProvider` に切り替える
     - ロール `GithubActionsRole`: `FederatedPrincipal` に `sts:AssumeRoleWithWebIdentity`、条件は `StringEquals` で `aud` と `sub`（`repo:naota444/Kiroween:ref:refs/heads/main`、ワイルドカードなし）、`maxSessionDuration` 3600 秒
     - インラインの権限は4つだけ: ブートストラップロール4種への `sts:AssumeRole`、`DoodleNearby*` スタックへの `cloudformation:DescribeStacks`、`doodle-nearby-web-*` バケットの `s3:ListBucket` / `PutObject` / `DeleteObject` / `GetObject`、`cloudfront:CreateInvalidation`。マネージドポリシーは付けない

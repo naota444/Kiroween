@@ -115,6 +115,18 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795326467976
       }
+    ],
+    "6.1 `GithubOidcStack` を実装する": [
+      {
+        "executionId": "44e4b90c-6b66-45d4-ad81-ec7117f71e4b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326867580
+      },
+      {
+        "executionId": "44e4b90c-6b66-45d4-ad81-ec7117f71e4b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795327259087
+      }
     ]
   }
 }
