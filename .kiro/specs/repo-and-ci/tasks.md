@@ -14,7 +14,7 @@
 
 ## Tasks
 
-- [ ] 1. ルート設定とパッケージの骨組み（全トラックの前提）
+- [x] 1. ルート設定とパッケージの骨組み（全トラックの前提）
   - [x] 1.1 ルートの共通設定ファイルを作る
     - ルート `package.json`（`private`、`type: module`、`workspaces`（`packages/core` を先頭）、`engines`、`build` / `typecheck` / `lint` / `format` / `test` スクリプト）
     - ルート `tsconfig.json`（`strict`、`composite`、`NodeNext`、`pretty: false`、`files: []`、5パッケージへの `references`）
@@ -24,7 +24,7 @@
     - ルートの `devDependencies`: typescript、vitest、fast-check、eslint 一式、prettier、tsx、yaml、aws-cdk-lib、constructs、aws-cdk
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.13_
 
-  - [-] 1.2 5つのワークスペースパッケージと `tests/` の骨組みを作る
+  - [x] 1.2 5つのワークスペースパッケージと `tests/` の骨組みを作る
     - `packages/core`（`@doodle-nearby/core`、`src/index.ts` は空の `export {}`、`main` / `types` / `exports`、`tsconfig.json`、`vitest.config.ts`、スモークテスト）
     - `backend/lambdas`（`src/index.ts` は `core` を import するだけ、`references` で `core` を参照）
     - `apps/local-server`（`src/index.ts`、`start: tsx src/index.ts`）
@@ -35,7 +35,7 @@
     - `packages/core/src/index.ts` 以外のパッケージは `core` を `vitest.shared.ts` の `coreAlias` で解決する
     - _Requirements: 1.1, 1.2, 1.5, 1.9, 1.10, 1.11, 1.12, 4.4_
 
-- [ ] 2. Checkpoint - 骨組みの確認
+- [x] 2. Checkpoint - 骨組みの確認
   - `npm install`、`npm run build`、`npm run typecheck`、`npm run lint`、`npm test` がルートで通ることを確認する。
   - Ensure all tests pass, ask the user if questions arise.
 

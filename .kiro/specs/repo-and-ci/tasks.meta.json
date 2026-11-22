@@ -47,6 +47,30 @@
         "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795271646189
+      },
+      {
+        "executionId": "dc73dbc5-07d7-43be-833c-19c0e54e1193",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795272407047
+      },
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310341777
+      }
+    ],
+    "1. ルート設定とパッケージの骨組み（全トラックの前提）": [
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310341833
+      }
+    ],
+    "2. Checkpoint - 骨組みの確認": [
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310342164
       }
     ]
   }
