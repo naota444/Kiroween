@@ -72,6 +72,18 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795310342164
       }
+    ],
+    "3.1 メッセージ型と定数を定義し、`index.ts` の再エクスポートを整える": [
+      {
+        "executionId": "0f8c0cc3-6bc6-4bae-b236-2f473f1081ef",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795311047381
+      },
+      {
+        "executionId": "0f8c0cc3-6bc6-4bae-b236-2f473f1081ef",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795312340308
+      }
     ]
   }
 }

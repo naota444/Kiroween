@@ -40,7 +40,7 @@
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 3. 【トラック A】core のメッセージ型とパーサー
-  - [ ] 3.1 メッセージ型と定数を定義し、`index.ts` の再エクスポートを整える
+  - [x] 3.1 メッセージ型と定数を定義し、`index.ts` の再エクスポートを整える
     - `packages/core/src/messages.ts` に `MAX_MESSAGE_BYTES`、`MAX_ROOMS`、`GEOHASH_ALPHABET`、`GEOHASH_LENGTH`、`MAX_AI_TEXT_LENGTH`、`MAX_ERROR_MESSAGE_LENGTH`、`ErrorCode`、`Join`、`Leave`、`DrawingSubmit`（2メンバーの共用体との交差型）、`ClientMessage`、`RoomSummary`、`RoomList`、`AiComment`、`AiPrompt`、`AiCard`、`ErrorMessage`、`ServerMessage` を定義する
     - `src/index.ts` で `messages`、`parser`、`room-list`、`message-specs` を `export *` する。後続タスクが同じファイルを触らないよう、`parser.ts`、`room-list.ts`、`message-specs.ts` は中身が `export {};` の仮ファイルを置く
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 1.9_
