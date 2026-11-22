@@ -127,6 +127,25 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795327259087
       }
+    ],
+    "6.2 `bin/infra.ts` に組み込み、認証なしで synth できるようにする": [
+      {
+        "executionId": "35df8553-ba50-4ebc-a630-0c03721c4af8",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795351066457
+      },
+      {
+        "executionId": "35df8553-ba50-4ebc-a630-0c03721c4af8",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795351283695
+      }
+    ],
+    "6. 【トラック B】infra: GithubOidcStack": [
+      {
+        "executionId": "35df8553-ba50-4ebc-a630-0c03721c4af8",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795351283755
+      }
     ]
   }
 }
