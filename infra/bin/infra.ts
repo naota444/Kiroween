@@ -1,8 +1,14 @@
-import { App, Stack } from 'aws-cdk-lib';
+import { App } from 'aws-cdk-lib';
+import { GithubOidcStack } from '../lib/github-oidc-stack.js';
 
 const app = new App();
-// cdk synth はスタックが0個だと失敗するため、空の仮スタックを置く。
-// タスク 6.2 で GithubOidcStack に置き換える。
-// 名前は CD の対象 'DoodleNearby*' に一致させない。
-new Stack(app, 'SkeletonPlaceholder');
+
+// アカウントと Region の両方があるときだけ env を渡す。
+// 未設定なら環境非依存のスタックになり、認証なしで synth できる。
+const account = process.env.CDK_DEFAULT_ACCOUNT;
+const region = process.env.CDK_DEFAULT_REGION;
+const env = account && region ? { account, region } : undefined;
+
+new GithubOidcStack(app, 'GithubOidcStack', { env });
+
 app.synth();

@@ -98,7 +98,7 @@
     - `packages/core/src/readme.test.ts` に書く。README を読み、`MESSAGE_SPECS` の各行と各フィールド名が表にあることを確かめる。表にない型があれば失敗する
     - _Requirements: 2.13, 2.14_
 
-- [ ] 6. 【トラック B】infra: GithubOidcStack
+- [x] 6. 【トラック B】infra: GithubOidcStack
   - [x] 6.1 `GithubOidcStack` を実装する
     - `infra/lib/github-oidc-stack.ts` に作る。コンテキスト `githubOidcProviderArn` があれば `OidcProviderNative.fromOidcProviderArn`、なければ `OidcProviderNative`（URL `https://token.actions.githubusercontent.com`、`clientIds: ['sts.amazonaws.com']`）。使用中の `aws-cdk-lib` で `OidcProviderNative` が使えなければ `OpenIdConnectProvider` に切り替える
     - ロール `GithubActionsRole`: `FederatedPrincipal` に `sts:AssumeRoleWithWebIdentity`、条件は `StringEquals` で `aud` と `sub`（`repo:naota444/Kiroween:ref:refs/heads/main`、ワイルドカードなし）、`maxSessionDuration` 3600 秒
@@ -107,7 +107,7 @@
     - ほかのスタックを参照せず、参照もされない
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7_
 
-  - [ ] 6.2 `bin/infra.ts` に組み込み、認証なしで synth できるようにする
+  - [x] 6.2 `bin/infra.ts` に組み込み、認証なしで synth できるようにする
     - `GithubOidcStack` を1つ作る。`env` は `CDK_DEFAULT_ACCOUNT` と `CDK_DEFAULT_REGION` が両方あるときだけ渡す（Region の固定値は書かない）
     - 環境依存のルックアップを使わず、`npm run synth -w infra`（`--no-lookups`）が AWS 認証なしで通ることを確かめる
     - _Requirements: 1.12, 4.5, 6.7_
