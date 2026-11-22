@@ -96,6 +96,25 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795313961173
       }
+    ],
+    "3.2 パーサーを実装する": [
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795325747127
+      },
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326467930
+      }
+    ],
+    "3. 【トラック A】core のメッセージ型とパーサー": [
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326467976
+      }
     ]
   }
 }

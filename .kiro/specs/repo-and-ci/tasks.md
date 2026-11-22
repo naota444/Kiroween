@@ -39,13 +39,13 @@
   - `npm install`、`npm run build`、`npm run typecheck`、`npm run lint`、`npm test` がルートで通ることを確認する。
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 3. 【トラック A】core のメッセージ型とパーサー
+- [x] 3. 【トラック A】core のメッセージ型とパーサー
   - [x] 3.1 メッセージ型と定数を定義し、`index.ts` の再エクスポートを整える
     - `packages/core/src/messages.ts` に `MAX_MESSAGE_BYTES`、`MAX_ROOMS`、`GEOHASH_ALPHABET`、`GEOHASH_LENGTH`、`MAX_AI_TEXT_LENGTH`、`MAX_ERROR_MESSAGE_LENGTH`、`ErrorCode`、`Join`、`Leave`、`DrawingSubmit`（2メンバーの共用体との交差型）、`ClientMessage`、`RoomSummary`、`RoomList`、`AiComment`、`AiPrompt`、`AiCard`、`ErrorMessage`、`ServerMessage` を定義する
     - `src/index.ts` で `messages`、`parser`、`room-list`、`message-specs` を `export *` する。後続タスクが同じファイルを触らないよう、`parser.ts`、`room-list.ts`、`message-specs.ts` は中身が `export {};` の仮ファイルを置く
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 2.10, 2.11, 1.9_
 
-  - [ ] 3.2 パーサーを実装する
+  - [x] 3.2 パーサーを実装する
     - `packages/core/src/parser.ts` に `ParseResult<T>`、`parseClientMessage`、`parseServerMessage` を実装する
     - 入口で `try { JSON.parse } catch` を使い throw しない。検査順は、サイズ（クライアント側のみ、`TextEncoder` で UTF-8 バイト長）、JSON、`type`、必須フィールド、型・範囲・形式
     - `isGeohash`、`isRoomCode`、`codePointLength` などの小さな検査関数に分け、既知のフィールドだけを出力に残す。スキーマライブラリは使わない
