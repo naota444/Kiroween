@@ -1,0 +1,132 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 ルートの共通設定ファイルを作る": [
+      {
+        "executionId": "06f06cc6-eb62-4e43-8d20-6da52f892ffb",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795266561081
+      },
+      {
+        "executionId": "06f06cc6-eb62-4e43-8d20-6da52f892ffb",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795266946887
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795267717088
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271611201
+      }
+    ],
+    "7.1 ルートの `.gitignore` を作る": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271611333
+      },
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271645764
+      }
+    ],
+    "7. 【トラック C】.gitignore": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271645801
+      }
+    ],
+    "1.2 5つのワークスペースパッケージと `tests/` の骨組みを作る": [
+      {
+        "executionId": "d59af557-fe0c-4f97-b6a3-dbd86781d0d4",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795271646189
+      },
+      {
+        "executionId": "dc73dbc5-07d7-43be-833c-19c0e54e1193",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795272407047
+      },
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310341777
+      }
+    ],
+    "1. ルート設定とパッケージの骨組み（全トラックの前提）": [
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310341833
+      }
+    ],
+    "2. Checkpoint - 骨組みの確認": [
+      {
+        "executionId": "c2e91054-f39d-4618-a975-72a17dc72e6a",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795310342164
+      }
+    ],
+    "3.1 メッセージ型と定数を定義し、`index.ts` の再エクスポートを整える": [
+      {
+        "executionId": "0f8c0cc3-6bc6-4bae-b236-2f473f1081ef",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795311047381
+      },
+      {
+        "executionId": "0f8c0cc3-6bc6-4bae-b236-2f473f1081ef",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795312340308
+      }
+    ],
+    "8.1 CI ワークフロー `.github/workflows/ci.yml` を作る": [
+      {
+        "executionId": "068352fe-3038-4b9c-b3f7-0124e94e785c",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795312525802
+      },
+      {
+        "executionId": "068352fe-3038-4b9c-b3f7-0124e94e785c",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795313961173
+      }
+    ],
+    "3.2 パーサーを実装する": [
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795325747127
+      },
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326467930
+      }
+    ],
+    "3. 【トラック A】core のメッセージ型とパーサー": [
+      {
+        "executionId": "7ee11477-523a-49a4-ad06-bd2163ee1f8b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326467976
+      }
+    ],
+    "6.1 `GithubOidcStack` を実装する": [
+      {
+        "executionId": "44e4b90c-6b66-45d4-ad81-ec7117f71e4b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795326867580
+      },
+      {
+        "executionId": "44e4b90c-6b66-45d4-ad81-ec7117f71e4b",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795327259087
+      }
+    ]
+  }
+}

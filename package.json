@@ -1,0 +1,38 @@
+{
+  "name": "doodle-nearby",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/core",
+    "backend/lambdas",
+    "apps/local-server",
+    "apps/web",
+    "infra"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "tsc -b && npm run build --workspaces --if-present",
+    "typecheck": "tsc -b",
+    "lint": "eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "aws-cdk": "^2.170.0",
+    "aws-cdk-lib": "^2.170.0",
+    "constructs": "^10.4.2",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "fast-check": "^3.23.0",
+    "prettier": "^3.4.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "typescript-eslint": "^8.18.0",
+    "vitest": "^5.1.1",
+    "yaml": "^2.6.0"
+  }
+}

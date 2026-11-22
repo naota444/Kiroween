@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "declaration": true,
+    "composite": true,
+    "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "pretty": false
+  },
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "backend/lambdas" },
+    { "path": "apps/local-server" },
+    { "path": "apps/web" },
+    { "path": "infra" }
+  ]
+}
