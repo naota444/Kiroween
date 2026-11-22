@@ -134,7 +134,7 @@
     - **Validates: Requirements 3.1, 3.2, 3.4, 3.7, 3.8**
 
 - [ ] 8. 【トラック C】GitHub Actions の CI / CD
-  - [ ] 8.1 CI ワークフロー `.github/workflows/ci.yml` を作る
+  - [x] 8.1 CI ワークフロー `.github/workflows/ci.yml` を作る
     - トリガーは `pull_request`（`branches: [main]`、`types: [opened, synchronize, reopened]`）、`permissions: contents: read`、`defaults.run.shell: bash`、`concurrency`
     - `lint`、`typecheck`、`test`、`synth` の4ジョブ。`needs` を持たず並列、`timeout-minutes: 15`。準備ステップは `actions/cache`（キーは `hashFiles('package-lock.json')`）で、キャッシュがなければ `npm ci`
     - `synth` は `AWS_EC2_METADATA_DISABLED=true`、`CDK_DISABLE_VERSION_CHECK=1` を設定して `npm run synth -w infra`

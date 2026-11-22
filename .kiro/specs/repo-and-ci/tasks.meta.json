@@ -84,6 +84,18 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795312340308
       }
+    ],
+    "8.1 CI ワークフロー `.github/workflows/ci.yml` を作る": [
+      {
+        "executionId": "068352fe-3038-4b9c-b3f7-0124e94e785c",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795312525802
+      },
+      {
+        "executionId": "068352fe-3038-4b9c-b3f7-0124e94e785c",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795313961173
+      }
     ]
   }
 }
