@@ -94,7 +94,7 @@
     - `packages/core/README.md` に、型ごとの方向とすべてのフィールド名を並べた Markdown の表を書く（`Type | Direction | Fields`）
     - _Requirements: 2.13, 2.14_
 
-  - [ ]* 5.2 README の表とレジストリの対応テストを書く
+  - [x]* 5.2 README の表とレジストリの対応テストを書く
     - `packages/core/src/readme.test.ts` に書く。README を読み、`MESSAGE_SPECS` の各行と各フィールド名が表にあることを確かめる。表にない型があれば失敗する
     - _Requirements: 2.13, 2.14_
 
