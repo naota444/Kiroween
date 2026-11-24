@@ -88,8 +88,8 @@
     - **Property 5: 部屋一覧の順序**
     - **Validates: Requirements 2.6**
 
-- [ ] 5. 【トラック A】メッセージ一覧と README の表
-  - [ ] 5.1 `MESSAGE_SPECS` と core の README を作る
+- [x] 5. 【トラック A】メッセージ一覧と README の表
+  - [x] 5.1 `MESSAGE_SPECS` と core の README を作る
     - `packages/core/src/message-specs.ts` に `MessageSpec` と `MESSAGE_SPECS` を作る。`satisfies Record<ClientMessage['type'] | ServerMessage['type'], MessageSpec>` 形式のオブジェクトから配列を作り、型を足してレジストリを更新し忘れるとコンパイルエラーになるようにする
     - `packages/core/README.md` に、型ごとの方向とすべてのフィールド名を並べた Markdown の表を書く（`Type | Direction | Fields`）
     - _Requirements: 2.13, 2.14_

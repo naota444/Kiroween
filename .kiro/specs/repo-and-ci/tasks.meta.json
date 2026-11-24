@@ -165,6 +165,25 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795480620900
       }
+    ],
+    "5.1 `MESSAGE_SPECS` と core の README を作る": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480632572
+      },
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480694503
+      }
+    ],
+    "5. 【トラック A】メッセージ一覧と README の表": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480694597
+      }
     ]
   }
 }
