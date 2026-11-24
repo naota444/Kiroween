@@ -146,6 +146,25 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795351283755
       }
+    ],
+    "4.1 `orderRoomSummaries` を実装する": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480548745
+      },
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480620812
+      }
+    ],
+    "4. 【トラック A】部屋一覧の並べ替え": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480620900
+      }
     ]
   }
 }

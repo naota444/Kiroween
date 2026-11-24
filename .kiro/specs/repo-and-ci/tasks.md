@@ -77,8 +77,8 @@
     - `DrawingSubmit` の両方 null と両方非 null が `@ts-expect-error` でコンパイルエラーになることを確かめる
     - _Requirements: 2.1, 2.2, 2.11_
 
-- [ ] 4. 【トラック A】部屋一覧の並べ替え
-  - [ ] 4.1 `orderRoomSummaries` を実装する
+- [x] 4. 【トラック A】部屋一覧の並べ替え
+  - [x] 4.1 `orderRoomSummaries` を実装する
     - `packages/core/src/room-list.ts` に `RoomCandidate` と `orderRoomSummaries` を実装する。`sameHash: true` を先に、それぞれの中で `distance` 昇順（安定ソート）、先頭 `MAX_ROOMS` 件を返す
     - geohash の距離計算は含めない（計算済みの `distance` を受け取るだけ）
     - _Requirements: 2.6_
