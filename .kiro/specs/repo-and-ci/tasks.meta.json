@@ -146,6 +146,56 @@
         "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
         "timestamp": 1795351283755
       }
+    ],
+    "4.1 `orderRoomSummaries` を実装する": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480548745
+      },
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480620812
+      }
+    ],
+    "4. 【トラック A】部屋一覧の並べ替え": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480620900
+      }
+    ],
+    "5.1 `MESSAGE_SPECS` と core の README を作る": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480632572
+      },
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480694503
+      }
+    ],
+    "5. 【トラック A】メッセージ一覧と README の表": [
+      {
+        "executionId": "2f027e43-2f67-4af7-9823-dcb55e5591da",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795480694597
+      }
+    ],
+    "5.2 README の表とレジストリの対応テストを書く": [
+      {
+        "executionId": "14ad90f7-ef49-48f9-bef7-22d847eece16",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795481113058
+      },
+      {
+        "executionId": "14ad90f7-ef49-48f9-bef7-22d847eece16",
+        "chatSessionId": "sess_5469b734-a9ef-40e5-97f6-a921e6703307",
+        "timestamp": 1795481588586
+      }
     ]
   }
 }

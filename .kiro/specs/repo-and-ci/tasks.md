@@ -77,8 +77,8 @@
     - `DrawingSubmit` の両方 null と両方非 null が `@ts-expect-error` でコンパイルエラーになることを確かめる
     - _Requirements: 2.1, 2.2, 2.11_
 
-- [ ] 4. 【トラック A】部屋一覧の並べ替え
-  - [ ] 4.1 `orderRoomSummaries` を実装する
+- [x] 4. 【トラック A】部屋一覧の並べ替え
+  - [x] 4.1 `orderRoomSummaries` を実装する
     - `packages/core/src/room-list.ts` に `RoomCandidate` と `orderRoomSummaries` を実装する。`sameHash: true` を先に、それぞれの中で `distance` 昇順（安定ソート）、先頭 `MAX_ROOMS` 件を返す
     - geohash の距離計算は含めない（計算済みの `distance` を受け取るだけ）
     - _Requirements: 2.6_
@@ -88,13 +88,13 @@
     - **Property 5: 部屋一覧の順序**
     - **Validates: Requirements 2.6**
 
-- [ ] 5. 【トラック A】メッセージ一覧と README の表
-  - [ ] 5.1 `MESSAGE_SPECS` と core の README を作る
+- [x] 5. 【トラック A】メッセージ一覧と README の表
+  - [x] 5.1 `MESSAGE_SPECS` と core の README を作る
     - `packages/core/src/message-specs.ts` に `MessageSpec` と `MESSAGE_SPECS` を作る。`satisfies Record<ClientMessage['type'] | ServerMessage['type'], MessageSpec>` 形式のオブジェクトから配列を作り、型を足してレジストリを更新し忘れるとコンパイルエラーになるようにする
     - `packages/core/README.md` に、型ごとの方向とすべてのフィールド名を並べた Markdown の表を書く（`Type | Direction | Fields`）
     - _Requirements: 2.13, 2.14_
 
-  - [ ]* 5.2 README の表とレジストリの対応テストを書く
+  - [x]* 5.2 README の表とレジストリの対応テストを書く
     - `packages/core/src/readme.test.ts` に書く。README を読み、`MESSAGE_SPECS` の各行と各フィールド名が表にあることを確かめる。表にない型があれば失敗する
     - _Requirements: 2.13, 2.14_
 
