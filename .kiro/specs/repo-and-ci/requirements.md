@@ -69,7 +69,7 @@
 9. THE `AiCard` message type SHALL include the fields: `type: "ai_card"`, `roomId: string`, `text: string` (1 to 40 characters in Japanese), and `imageKey: string`.
 10. THE `ErrorMessage` message type SHALL include the fields: `type: "error"`, `code: string` (one of a fixed set of codes defined in `packages/core`), and `message: string` (1 to 200 characters).
 11. THE `DrawingSubmit` message type SHALL require that exactly one of `imageData` or `imageKey` is non-null; a value in which both are null or both are non-null SHALL cause a TypeScript compile error in strict mode.
-12. IF a received WebSocket message is not valid JSON, has a `type` value outside its direction's union, or lacks a required field, THEN THE Core package SHALL provide a message parser that rejects it and returns a result identifying the failure, without throwing, so that the server can send an `ErrorMessage` and keep the connection open.
+12. IF a received WebSocket message is not valid JSON, has a `type` value outside its direction's union, or lacks a required field (a missing key, including a missing `type` key, is reported as `missing_field`, distinct from a key present with an invalid value), THEN THE Core package SHALL provide a message parser that rejects it and returns a result identifying the failure, without throwing, so that the server can send an `ErrorMessage` and keep the connection open.
 13. THE Core package README SHALL contain a Markdown table with one row per message type, listing the direction (Client→Server or Server→Client) and every field name of that type.
 14. WHEN a new message type is added to `packages/core`, THE Core package SHALL fail an automated test if the README table does not contain a row for that type.
 
@@ -124,7 +124,7 @@
 7. THE CD workflow SHALL set the condition `if: vars.DEPLOY_ENABLED == 'true'` on every job in the workflow file (the deploy job and any other job), because GitHub Actions does not allow `if` at the workflow level.
 8. WHILE DEPLOY_ENABLED is unset, `'false'`, or any value other than `'true'`, WHEN a commit is pushed to the `main` branch, THE CD workflow SHALL skip every job, so that no AWS authentication, `cdk deploy`, S3 upload, or CloudFront invalidation step is executed and deployed AWS resources remain unchanged.
 9. WHEN the repository variable DEPLOY_ENABLED is set to `'true'`, THE CD workflow SHALL execute its jobs on the next push to `main` without any edit to the workflow file.
-10. THE Repository SHALL have DEPLOY_ENABLED unset in its initial state, so that CD is disabled until the AWS environment is ready.
+10. THE Repository SHALL have DEPLOY_ENABLED unset in its initial state, so that CD is disabled until the AWS environment is ready and at least one application stack whose name starts with `DoodleNearby` exists on `main`.
 11. IF any step of the CD workflow fails, THEN THE CD workflow SHALL mark the run as failed and write the name of the failed step and its error output (the last 50 lines at most) to the GitHub Actions job summary.
 ---
 

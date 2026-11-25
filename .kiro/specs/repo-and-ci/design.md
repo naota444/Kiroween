@@ -278,6 +278,8 @@ flowchart TD
 
 `DEPLOY_ENABLED` を `'true'` にするだけで、ワークフローを編集せずに次の push から動く（要件 5.9）。
 
+**有効化の前提**: この Spec が作るスタックは `GithubOidcStack` だけで、CD が `cdk deploy 'DoodleNearby*'` で対象にするアプリスタックは別 Spec で作る。一致するスタックがない状態で `DEPLOY_ENABLED` を `'true'` にすると、`cdk deploy` が失敗する。そのため、`DoodleNearby*` に一致するアプリスタックが `main` に入るまでは、`DEPLOY_ENABLED` を未設定のままにする。ワークフローはこの状況を判定せず、運用ルールとして守る。
+
 **ワークフローの形**
 
 ```yaml
@@ -564,8 +566,8 @@ export function parseServerMessage(raw: string): ParseResult<ServerMessage>;
 - **検査の順序と `code`**:
   1. UTF-8 でのバイト長が `MAX_MESSAGE_BYTES` を超えたら `message_too_large`（`TextEncoder` で計測する。ブラウザと Node の両方で動く）。クライアントメッセージ（`parseClientMessage`）だけに適用する。32KB は WebSocket の1メッセージの制限で、他のフィールドも含めた JSON 全体が対象（要件 2.5）。
   2. JSON として不正、またはオブジェクトでない → `invalid_json`。
-  3. `type` が方向ごとの共用体にない → `unknown_type`。たとえばクライアント側で `room_list` を受けた場合。
-  4. 必須フィールドがない → `missing_field`。
+  3. `type` フィールドがない → `missing_field`。`type` はあるが方向ごとの共用体にない → `unknown_type`（たとえばクライアント側で `room_list` を受けた場合）。
+  4. 必須フィールドがない → `missing_field`。キーがないことと値が `null` であることは区別する。`DrawingSubmit` で `imageData` と `imageKey` のどちらかのキーがない場合は `missing_field`、両方のキーがあって両方 `null`、または両方非 null の場合は `invalid_field`。
   5. 型・範囲・形式が違う → `invalid_field`。
 - **フィールドの検査**:
   - `geohash`: 長さ6、全文字が `GEOHASH_ALPHABET`。`roomCode`: `^\d{4}$` または `null`。
@@ -673,7 +675,7 @@ JSON テキスト（UTF-8）を WebSocket のテキストフレームで送る�
 
 *For any* 有効なメッセージに、次のうちいずれか1つの変更を加えたもの、パーサーは `ok: false` を返し、`error.code` はその変更に対応する値になる。
 
-- 必須フィールドの削除 → `missing_field`
+- 必須フィールドの削除（`type` の削除、`DrawingSubmit` の `imageData` または `imageKey` のキーの削除を含む。値を `null` にするのとは別） → `missing_field`
 - 方向の共用体にない `type`（反対方向の `type` を含む） → `unknown_type`
 - 6 文字でない、または英数字が `GEOHASH_ALPHABET` にない `geohash`、4 桁の数字でない `roomCode` → `invalid_field`
 - 1〜40 文字の範囲外の AI テキスト、1〜200 文字の範囲外の `ErrorMessage.message` → `invalid_field`
