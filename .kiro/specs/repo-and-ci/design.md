@@ -312,7 +312,7 @@ jobs:
       - if: steps.cache.outputs.cache-hit != 'true'
         run: npm ci
       - id: auth
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
@@ -325,7 +325,7 @@ jobs:
       - id: outputs   # スタック出力から値を読む
         run: ...
       - id: web_build
-        run: npm run build -w apps/web 2>&1 | tee "$RUNNER_TEMP/logs/web_build.log"
+        run: (npx tsc -b packages/core && npm run build -w apps/web) 2>&1 | tee "$RUNNER_TEMP/logs/web_build.log"
       - id: s3_sync
         run: aws s3 sync apps/web/dist "s3://$BUCKET" --delete 2>&1 | tee "$RUNNER_TEMP/logs/s3_sync.log"
       - id: invalidate
