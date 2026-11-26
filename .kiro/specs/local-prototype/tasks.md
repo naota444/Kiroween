@@ -292,7 +292,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`
     - _Requirements: 10.1, 10.2, 10.3, 10.7, 10.9_
 
-  - [x]* 4.4 `RoomStore` の契約テストのスイートを書く
+  - [-]* 4.4 `RoomStore` の契約テストのスイートを書く
     - 触るファイル: `packages/core/src/testing/room-store-contract.ts`(`runRoomStoreContract(name, createStore)`。`index.ts` からは export しない)、`packages/core/src/memory-room-store.test.ts`(スイートを呼ぶ)
     - 取得、一覧(1〜9マス、位置なしを含めない)、`addParticipant` の `full` / `identity_taken` / 冪等、`removeParticipant`、`appendDrawing`(`seq`、50枚の切り捨て)、`deleteExpired`(番号の再利用)、`createRoom` の `code_taken` と期限切れの置き換え。ファクトリを受け取るので、将来の DynamoDB 実装でも同じケースを実行できる
     - このスイートは必須の6つ(③、⑤)には数えない。③と⑤は `RoomService` のテスト(4.6、4.11)で満たす

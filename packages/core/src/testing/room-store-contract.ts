@@ -6,6 +6,10 @@
  * 利用者は vitest が入っている前提でよい。このファイルは本体の index.ts からは export しない。
  *
  * 前提: createStore() は呼ぶたびに空のストアを返す(DynamoDB ならテストごとに別のテーブルか接頭辞)。
+ *
+ * options.deletesImmediately は必須。deleteExpired が即時に削除するストア(MemoryRoomStore)は true、
+ * 削除が遅れうるストア(DynamoDbRoomStore は TTL 任せのため false の想定)は false を渡す。
+ * false のときは「削除後に取得すると null」の検査だけを行わない(詳細は RoomStoreContractOptions)。
  */
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
@@ -51,7 +55,23 @@ const drawing = (n: number): NewDrawing => ({
   createdAt: n,
 });
 
-export function runRoomStoreContract(name: string, createStore: CreateRoomStore): void {
+export interface RoomStoreContractOptions {
+  /**
+   * deleteExpired(now) が期限切れの部屋を即座に削除するか。呼び出し側が必ず明示する(既定値なし)。
+   * true: 削除後に getRoomById / getRoomByCode が null、listDrawings が [] になり、削除した部屋の一覧も返す。
+   * false: 削除が遅れうるストア(DynamoDB の TTL 任せなど)。この検査だけ行わない。
+   *   期限切れの部屋を見せないことは RoomService の読み取り時判定(expiresAt <= now)が保証する。
+   * どちらの場合も、期限切れコードの再利用、deleteExpired が例外にならないこと、
+   * 期限内の部屋と絵が読めることは必須。
+   */
+  deletesImmediately: boolean;
+}
+
+export function runRoomStoreContract(
+  name: string,
+  createStore: CreateRoomStore,
+  options: RoomStoreContractOptions,
+): void {
   describe(`RoomStore contract: ${name}`, () => {
     describe('createRoom / get', () => {
       it('gets a created room by id and by code, and returns null for unknown keys', async () => {
@@ -263,29 +283,26 @@ export function runRoomStoreContract(name: string, createStore: CreateRoomStore)
     });
 
     describe('deleteExpired', () => {
-      it('deletes rooms with expiresAt <= now, with their drawings, and reports them', async () => {
+      // --- すべてのストアで必須 ---
+      it('resolves without throwing, including when there is nothing to delete', async () => {
         const store = await createStore();
-        await store.createRoom(room({ roomId: 'old', roomCode: '1111', expiresAt: 100 }), 0);
-        await store.createRoom(
-          room({ roomId: 'nogeo', roomCode: '2222', geohash: null, expiresAt: 100 }),
-          0,
-        );
-        await store.createRoom(room({ roomId: 'live', roomCode: '3333', expiresAt: 200 }), 0);
-        await store.appendDrawing('old', drawing(1), 50);
-
-        expect(await store.deleteExpired(99)).toEqual([]);
-        const deleted = await store.deleteExpired(100);
-        expect(deleted.sort((a, b) => a.roomId.localeCompare(b.roomId))).toEqual([
-          { roomId: 'nogeo', geohash: null },
-          { roomId: 'old', geohash: 'xn76ur' },
-        ]);
-        expect(await store.getRoomById('old')).toBeNull();
-        expect(await store.getRoomByCode('1111')).toBeNull();
-        expect(await store.listDrawings('old')).toEqual([]);
-        expect((await store.getRoomById('live'))?.roomId).toBe('live');
+        await expect(store.deleteExpired(0)).resolves.toBeDefined();
+        await store.createRoom(room({ expiresAt: 100 }), 0);
+        await expect(store.deleteExpired(99)).resolves.toBeDefined();
       });
 
-      it('lets the room code be reused after deletion', async () => {
+      it('keeps unexpired rooms and their drawings readable', async () => {
+        const store = await createStore();
+        await store.createRoom(room({ roomId: 'old', roomCode: '1111', expiresAt: 100 }), 0);
+        await store.createRoom(room({ roomId: 'live', roomCode: '3333', expiresAt: 200 }), 0);
+        await store.appendDrawing('live', drawing(1), 50);
+        await store.deleteExpired(100);
+        expect((await store.getRoomById('live'))?.roomId).toBe('live');
+        expect((await store.getRoomByCode('3333'))?.roomId).toBe('live');
+        expect((await store.listDrawings('live')).map((d) => d.seq)).toEqual([1]);
+      });
+
+      it('lets an expired room code be reused after deleteExpired', async () => {
         const store = await createStore();
         await store.createRoom(room(), 0);
         await store.deleteExpired(1000);
@@ -294,6 +311,44 @@ export function runRoomStoreContract(name: string, createStore: CreateRoomStore)
         });
         expect((await store.getRoomByCode('1234'))?.roomId).toBe('r9');
       });
+
+      it('lets an expired room code be reused without deleteExpired', async () => {
+        const store = await createStore();
+        await store.createRoom(room(), 0);
+        expect(await store.createRoom(room({ roomId: 'r8', expiresAt: 5000 }), 1000)).toEqual({
+          ok: true,
+        });
+        expect((await store.getRoomByCode('1234'))?.roomId).toBe('r8');
+      });
+
+      // --- 即時削除するストア(deletesImmediately: true)だけ ---
+      // 即時削除しないストア(TTL 任せ)では、期限切れの非表示は RoomService の読み取り時判定が担う。
+      it.runIf(options.deletesImmediately)(
+        'deletes rooms with expiresAt <= now, with their drawings, and reports them',
+        async () => {
+          const store = await createStore();
+          await store.createRoom(room({ roomId: 'old', roomCode: '1111', expiresAt: 100 }), 0);
+          await store.createRoom(
+            room({ roomId: 'nogeo', roomCode: '2222', geohash: null, expiresAt: 100 }),
+            0,
+          );
+          await store.createRoom(room({ roomId: 'live', roomCode: '3333', expiresAt: 200 }), 0);
+          await store.appendDrawing('old', drawing(1), 50);
+
+          expect(await store.deleteExpired(99)).toEqual([]);
+          const deleted = await store.deleteExpired(100);
+          expect(deleted.sort((a, b) => a.roomId.localeCompare(b.roomId))).toEqual([
+            { roomId: 'nogeo', geohash: null },
+            { roomId: 'old', geohash: 'xn76ur' },
+          ]);
+          expect(await store.getRoomById('old')).toBeNull();
+          expect(await store.getRoomByCode('1111')).toBeNull();
+          expect(await store.getRoomById('nogeo')).toBeNull();
+          expect(await store.getRoomByCode('2222')).toBeNull();
+          expect(await store.listDrawings('old')).toEqual([]);
+          expect((await store.getRoomById('live'))?.roomId).toBe('live');
+        },
+      );
     });
 
     // Feature: local-prototype, Property 12: RoomStore はモデルと同じ結果を返す
