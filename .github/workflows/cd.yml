@@ -37,7 +37,7 @@ jobs:
         run: npm ci
       - id: auth
         name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
@@ -67,7 +67,7 @@ jobs:
           } 2>&1 | tee "$RUNNER_TEMP/logs/outputs.log"
       - id: web_build
         name: Build web app
-        run: npm run build -w apps/web 2>&1 | tee "$RUNNER_TEMP/logs/web_build.log"
+        run: (npx tsc -b packages/core && npm run build -w apps/web) 2>&1 | tee "$RUNNER_TEMP/logs/web_build.log"
       - id: s3_sync
         name: Sync web app to S3
         run: aws s3 sync apps/web/dist "s3://$BUCKET" --delete 2>&1 | tee "$RUNNER_TEMP/logs/s3_sync.log"
