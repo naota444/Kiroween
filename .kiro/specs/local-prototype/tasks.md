@@ -56,8 +56,8 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
 
 ## Tasks
 
-- [ ] 1. 【共通の土台】依存、メッセージ型、パーサー、geohash
-  - [ ] 1.1 依存パッケージをまとめて追加する
+- [x] 1. 【共通の土台】依存、メッセージ型、パーサー、geohash
+  - [x] 1.1 依存パッケージをまとめて追加する
     - 触るファイル: `packages/core/package.json`(`dependencies` に `"ngeohash": "0.6.3"`、`devDependencies` に `"@types/ngeohash": "0.6.8"`)、`apps/local-server/package.json`(`dependencies` に `ws` 8.x、`devDependencies` に `@types/ws` 8.x。`ws` はロックファイルにある 8.23.0 に合わせる)、`apps/web/package.json`(`dependencies` に `fflate` 0.8.x、`devDependencies` に `@vitejs/plugin-basic-ssl` 2.3.x)、`package-lock.json`
     - `ngeohash` と `@types/ngeohash` は `^` や `~` を付けず、完全固定にする。`apps/web` と `apps/local-server` は `ngeohash` を直接依存にしない
     - `.gitattributes` は `* text=auto eol=lf` のまま。新しい行が LF で保存され、改行だけの差分が出ないことを確認する(`.gitattributes` が無ければ作る)
@@ -66,7 +66,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd install` の後、`npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build` が通る。`npm.cmd ci` が成功する(ロックファイルが `package.json` と合っている)
     - _Requirements: 12.9, 8.1, 8.3_
 
-  - [ ] 1.2 メッセージ型と定数を `messages.ts` に追加する
+  - [x] 1.2 メッセージ型と定数を `messages.ts` に追加する
     - 触るファイル: `packages/core/src/messages.ts`(`packages/core/src/index.ts` は `export *` 済みなので触らない)
     - 追加する定数: `MAX_PARTICIPANTS`(8)、`MAX_DRAWINGS_PER_ROOM`(50)、`MAX_IMAGE_SIDE_PX`(512)、`MAX_IMAGE_DATA_CHARS`(30,000)、`PARTICIPANT_COLORS`(8色)、`PARTICIPANT_ICONS`(12種類)
     - 追加する型: `ParticipantColor`、`ParticipantIcon`、`ParticipantIdentity`、`CreateRoom`、`JoinByCode`、`RoomCreated`、`RoomJoined`、`RoomLeft`、`ParticipantJoined`、`ParticipantLeft`、`DrawingAdded`。`ClientMessage` と `ServerMessage` の共用体にメンバーを足す
@@ -75,7 +75,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`(既存テストが通る)
     - _Requirements: 11.1, 11.2, 11.9, 11.11, 6.5, 6.10, 9.5_
 
-  - [ ] 1.3 新メッセージのパーサーを `parser.ts` に追加する
+  - [x] 1.3 新メッセージのパーサーを `parser.ts` に追加する
     - 触るファイル: `packages/core/src/parser.ts`、`packages/core/src/parser.test.ts`(スモークテストを数件追記)
     - `CLIENT_TYPES` に `create_room`、`join_by_code`、`SERVER_TYPES` に6種類を追加する。`parseClientMessage`、`parseServerMessage` の `switch` は、`default` に頼らず、明示的な `case` に直す(新メッセージが既存のパーサーに誤って入らないようにする)
     - 新メッセージごとの検査関数と `checkIdentity`(`color`、`icon` が定数に含まれること)を足す。必須フィールドなしは `missing_field`、型・範囲・形式の誤りは `invalid_field`。`drawing_added` は `imageData` と `imageKey` の「どちらか一方だけ非 null」を検査する
@@ -84,14 +84,14 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`(`parser.test.ts` の既存テストと追記分)、`npm.cmd run typecheck`、`npm.cmd run lint`
     - _Requirements: 11.3, 11.4, 11.5, 11.6, 14.2_
 
-  - [ ] 1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)
+  - [x] 1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)
     - 触るファイル: `packages/core/src/parser.test.ts`(追記)
     - 新メッセージ8種類のジェネレーターを作り、JSON に直列化してから対応するパーサーで読むと、`ok: true` で、元のメッセージと深く等しいことを確かめる。1種類につき100ケース以上(`numRuns: 100` 以上)
     - **Property 1: 新メッセージのラウンドトリップ**
     - **Validates: Requirements 11.3, 11.7, 13.4**
     - 完了の確認: `npm.cmd test`、`npm.cmd run lint`、`npm.cmd run typecheck`
 
-  - [ ] 1.5 `encodeGeohash` と `neighborCells` を作る
+  - [x] 1.5 `encodeGeohash` と `neighborCells` を作る
     - 触るファイル: `packages/core/src/geohash.ts`(新規)、`packages/core/src/geohash.test.ts`(新規。スモークテスト)、`packages/core/src/index.ts`(`geohash.js` を再エクスポート)
     - `InvalidCoordinateError`、`InvalidGeohashError`、`encodeGeohash(latitude, longitude)`(有限数と範囲を検査してから `ngeohash.encode`)、`neighborCells(geohash)`(`isGeohash` で検査し、`[geohash, ...ngeohash.neighbors(geohash)]` から重複を除く。自分が先頭)を作る
     - `ngeohash` は既定 import(`import ngeohash from 'ngeohash'`)で使う
@@ -100,7 +100,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`
     - _Requirements: 8.1, 8.2, 8.3, 8.6, 11.9_
 
-  - [ ] 1.6 近傍の対称性のプロパティテストを書く(必須②)
+  - [x] 1.6 近傍の対称性のプロパティテストを書く(必須②)
     - 触るファイル: `packages/core/src/geohash.test.ts`(追記)
     - 有効な6文字の geohash(`GEOHASH_ALPHABET` から生成)について、`B` が `neighborCells(A)` に含まれるなら、`A` が `neighborCells(B)` に含まれることを確かめる。あわせて、自分を含む、重複なし、要素数が9または6であることも確かめる。100ケース以上
     - **Property 6: 近傍のマス**
@@ -122,7 +122,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - **Validates: Requirements 11.4, 11.5, 11.6, 14.1, 14.2**
     - 完了の確認: `npm.cmd test`
 
-- [ ] 2. チェックポイント - 共通の土台の確認
+- [x] 2. チェックポイント - 共通の土台の確認
   - `npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build` がルートで通ることを確認する。`encodeGeohash` と新メッセージ型・パーサーが `@doodle-nearby/core` の入口から import できることを確認する。
   - このチェックポイントが終わったら、W(タスク 3)と S(タスク 4)を並行して進められる。
   - Ensure all tests pass, ask the user if questions arise.

@@ -1,0 +1,101 @@
+{
+  "pbtResults": {
+    "1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)": {
+      "status": "passed",
+      "lastRunTimestamp": 1795654725821
+    }
+  },
+  "executionHistory": {
+    "1.1 依存パッケージをまとめて追加する": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652990392
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795653180986
+      }
+    ],
+    "1.2 メッセージ型と定数を `messages.ts` に追加する": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795653185065
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654039729
+      }
+    ],
+    "1.3 新メッセージのパーサーを `parser.ts` に追加する": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654043812
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654606386
+      }
+    ],
+    "1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654616959
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654738791
+      }
+    ],
+    "1.5 `encodeGeohash` と `neighborCells` を作る": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654742583
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654780795
+      }
+    ],
+    "1.6 近傍の対称性のプロパティテストを書く(必須②)": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654784524
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654833213
+      }
+    ],
+    "1. 【共通の土台】依存、メッセージ型、パーサー、geohash": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654833267
+      }
+    ],
+    "2. チェックポイント - 共通の土台の確認": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654837011
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654890168
+      }
+    ]
+  }
+}
