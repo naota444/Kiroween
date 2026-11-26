@@ -57,7 +57,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
 ## Tasks
 
 - [ ] 1. 【共通の土台】依存、メッセージ型、パーサー、geohash
-  - [ ] 1.1 依存パッケージをまとめて追加する
+  - [x] 1.1 依存パッケージをまとめて追加する
     - 触るファイル: `packages/core/package.json`(`dependencies` に `"ngeohash": "0.6.3"`、`devDependencies` に `"@types/ngeohash": "0.6.8"`)、`apps/local-server/package.json`(`dependencies` に `ws` 8.x、`devDependencies` に `@types/ws` 8.x。`ws` はロックファイルにある 8.23.0 に合わせる)、`apps/web/package.json`(`dependencies` に `fflate` 0.8.x、`devDependencies` に `@vitejs/plugin-basic-ssl` 2.3.x)、`package-lock.json`
     - `ngeohash` と `@types/ngeohash` は `^` や `~` を付けず、完全固定にする。`apps/web` と `apps/local-server` は `ngeohash` を直接依存にしない
     - `.gitattributes` は `* text=auto eol=lf` のまま。新しい行が LF で保存され、改行だけの差分が出ないことを確認する(`.gitattributes` が無ければ作る)
