@@ -56,7 +56,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
 
 ## Tasks
 
-- [ ] 1. 【共通の土台】依存、メッセージ型、パーサー、geohash
+- [x] 1. 【共通の土台】依存、メッセージ型、パーサー、geohash
   - [x] 1.1 依存パッケージをまとめて追加する
     - 触るファイル: `packages/core/package.json`(`dependencies` に `"ngeohash": "0.6.3"`、`devDependencies` に `"@types/ngeohash": "0.6.8"`)、`apps/local-server/package.json`(`dependencies` に `ws` 8.x、`devDependencies` に `@types/ws` 8.x。`ws` はロックファイルにある 8.23.0 に合わせる)、`apps/web/package.json`(`dependencies` に `fflate` 0.8.x、`devDependencies` に `@vitejs/plugin-basic-ssl` 2.3.x)、`package-lock.json`
     - `ngeohash` と `@types/ngeohash` は `^` や `~` を付けず、完全固定にする。`apps/web` と `apps/local-server` は `ngeohash` を直接依存にしない
@@ -100,7 +100,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`
     - _Requirements: 8.1, 8.2, 8.3, 8.6, 11.9_
 
-  - [ ] 1.6 近傍の対称性のプロパティテストを書く(必須②)
+  - [x] 1.6 近傍の対称性のプロパティテストを書く(必須②)
     - 触るファイル: `packages/core/src/geohash.test.ts`(追記)
     - 有効な6文字の geohash(`GEOHASH_ALPHABET` から生成)について、`B` が `neighborCells(A)` に含まれるなら、`A` が `neighborCells(B)` に含まれることを確かめる。あわせて、自分を含む、重複なし、要素数が9または6であることも確かめる。100ケース以上
     - **Property 6: 近傍のマス**

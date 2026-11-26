@@ -65,6 +65,25 @@
         "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
         "timestamp": 1795654780795
       }
+    ],
+    "1.6 近傍の対称性のプロパティテストを書く(必須②)": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654784524
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654833213
+      }
+    ],
+    "1. 【共通の土台】依存、メッセージ型、パーサー、geohash": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654833267
+      }
     ]
   }
 }
