@@ -504,9 +504,10 @@ export interface RoomStore {
 ```
 
 - 期限切れの判定は `room.expiresAt <= now`(`now` が `expiresAt` 以上なら期限切れ。要件 10.5)。
+- `deleteExpired` の「消す」は、`MemoryRoomStore` のように即時に消すストアの契約である。TTL 任せのストアは、すぐには消えなくてもよい(契約テストの `deletesImmediately: false`。決定事項 7)。その場合も、期限切れの部屋を見せないことは `RoomService` の読み取り時の判定が保証する。
 - `MemoryRoomStore` は `Map<roomId, …>` と `Map<roomCode, roomId>` で実装する。各メソッドは `await` を挟まずに同期的に判定と更新を行い、原子性を保つ。
 - **DynamoDB 実装への写し方**(後続 Spec。この Spec では作らない): 部屋の項目に `participants`、`seq` カウンターを持たせる。絵は別項目(`roomId` + `seq`)にして、`appendDrawing` は部屋の項目の `seq` を原子的に加算してから絵を書く。`roomCode` と `geohash` は GSI。DynamoDB の TTL は秒単位で、削除に遅れがある(最大で数十時間)ため、`expiresAt` をミリ秒のまま持ち、読み取り時の判定(`RoomService`)に頼る。`deleteExpired` は TTL に任せて、何もしなくてよい実装もありうる。`identity_taken` を条件式で表しにくいときは、参加者を識別キーのマップにして `attribute_not_exists` を使うか、トランザクションにする。
-- **契約テスト**: `testing/room-store-contract.ts` が `runRoomStoreContract(name: string, createStore: () => RoomStore | Promise<RoomStore>)` を export する。ファクトリを受け取るので、`MemoryRoomStore` は `core` 内のテストから、DynamoDB 実装は将来、同じケースをそのまま実行できる(要件 10.10)。`index.ts` からは export しない(`vitest` の import を本番のバンドルに入れないため)。後続の Spec で別パッケージから使うときは、`package.json` の `exports` に `./testing` を足し、`vitest.shared.ts` の `coreAlias` に先に `@doodle-nearby/core/testing` を足す(文字列のエイリアスは前方一致で、`@doodle-nearby/core` だけだと `/testing` が壊れる)。この Spec では `core` 内の相対 import だけを使う。
+- **契約テスト**: `testing/room-store-contract.ts` が `runRoomStoreContract(name: string, createStore: () => RoomStore | Promise<RoomStore>, options: { deletesImmediately: boolean })` を export する(`options` は必須。決定事項 7)。ファクトリを受け取るので、`MemoryRoomStore` は `core` 内のテストから、DynamoDB 実装は将来、同じケースをそのまま実行できる(要件 10.10)。`index.ts` からは export しない(`vitest` の import を本番のバンドルに入れないため)。後続の Spec で別パッケージから使うときは、`package.json` の `exports` に `./testing` を足し、`vitest.shared.ts` の `coreAlias` に先に `@doodle-nearby/core/testing` を足す(文字列のエイリアスは前方一致で、`@doodle-nearby/core` だけだと `/testing` が壊れる)。この Spec では `core` 内の相対 import だけを使う。
 
 #### 5.3 `RoomService`
 
@@ -1240,7 +1241,7 @@ export default defineConfig({
 | `parser.test.ts`(追記) | 新メッセージの例示と、Property 1〜4 | 例示 + PBT |
 | `geohash.test.ts` | Property 5、6。内部のマス `xn76ur`(8つの近傍、自分を含まない)、経度の東端 `xypzpg`(`8n0p…` を含む9マス)、北端 `upzpgx`(6マス)、南端 `h0p058`(6マス)。`NaN` と緯度91の拒否 | PBT + 例示 |
 | `participant-identity.test.ts` | `pickIdentity`:使用済みを避ける、96通りから選ぶ、空きがなければ `null` | 例示 + PBT(Property 8 の一部) |
-| `memory-room-store.test.ts` | `runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore())`。Property 12 と、各操作の例示。unRoomStoreContract は 	esting/room-store-contract.ts にあり、@doodle-nearby/core/testing(package.json の exports)から公開する。aws-deploy の DynamoDbRoomStore も同じ契約を使う | 契約 |
+| `memory-room-store.test.ts` | `runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore(), { deletesImmediately: true })`。Property 12 と、各操作の例示。`runRoomStoreContract` は `testing/room-store-contract.ts` にあり、`@doodle-nearby/core/testing`(package.json の exports)から公開する。aws-deploy の DynamoDbRoomStore も同じ契約を使う(`deletesImmediately` は false の想定。決定事項 7) | 契約 |
 | `room-service.test.ts` | 作成、ID・番号での参加、退出、定員、絵の配布、期限切れ(要件 13.1)。Property 7〜11、13〜18。エラーケースごとに、状態が変わらないこと(要件 13.2):満員、番号が一致しない、ID が存在しない、期限切れ。部屋番号の枯渇(10,000個)の例示。`roomsChanged` の呼ばれ方 | 例示 + PBT |
 | `room-service.subscribers.test.ts` | Property 14。再送先を選ぶ純関数 `selectListSubscribers(connections, roomGeohash)`(`room-service.ts` の隣に置く)を使う | PBT |
 
@@ -1343,3 +1344,4 @@ export default defineConfig({
 | 4 | tech.md は変えない。4色パレット化で「大きい画像は S3」の条件は今回発動しない |
 | 5 | 1 MiB を超える入力で `ws` が接続を閉じることは許容し、README に書く |
 | 6 | 同じ接続元 IP の部屋を優先する機能は、この Spec では作らない |
+| 7 | `runRoomStoreContract` は第3引数 `{ deletesImmediately: boolean }` を必須で受け取る。`true` のときだけ「`deleteExpired` の後に `getRoomById` / `getRoomByCode` が `null`、絵が消える(消した部屋の一覧も返す)」を検査する。期限切れ番号の再利用(`deleteExpired` の前後どちらでも)、`deleteExpired` が例外にならないこと(削除対象がなくても)、期限内の部屋と絵が読めることは、すべてのストアで必須。`MemoryRoomStore` は `true`。`DynamoDbRoomStore`(aws-deploy)は `false` の想定。理由: TTL による削除は遅れうる。位置なしの部屋は GSI にないため、すぐ探すには Scan が要る。Lambda には `sweepExpired` を呼ぶタイマーがない。期限切れの部屋を見せないことは `RoomService` の読み取り時の判定(`expiresAt <= now`)が保証する |
