@@ -272,8 +272,8 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd run lint`(Prettier が通る)、`npm.cmd test`
     - _Requirements: 12.8, 12.12_
 
-- [ ] 4. 【グループ S: サーバー】`packages/core` の部屋ロジックと `apps/local-server`
-  - [ ] 4.1 部屋の型、定数、時計、参加者の識別を作る
+- [x] 4. 【グループ S: サーバー】`packages/core` の部屋ロジックと `apps/local-server`
+  - [x] 4.1 部屋の型、定数、時計、参加者の識別を作る
     - 触るファイル: `packages/core/src/room-types.ts`(`DrawingImage`、`Participant`、`Room`、`StoredDrawing`、`ConnectionState`)、`room-constants.ts`(`ROOM_RETENTION_MS`、`SWEEP_INTERVAL_MS`)、`clock.ts`(`Clock`、`systemClock`、`createManualClock`)、`participant-identity.ts`(`pickIdentity`)、`participant-identity.test.ts`(スモークテスト)、`packages/core/src/index.ts`(上記4ファイルを再エクスポート)
     - 緯度経度、名前、IP、端末 ID の項目は作らない
     - `pickIdentity(taken, random)`: 96通りから使用済みを除いて選ぶ。空きがなければ `null`
@@ -285,21 +285,21 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 使用済みを避けること、96通りから選ぶこと、空きがなければ `null` になることを確かめる
     - **Validates: Requirements 6.5, 6.6**
 
-  - [ ] 4.3 `RoomStore` interface と `MemoryRoomStore` を作る
+  - [x] 4.3 `RoomStore` interface と `MemoryRoomStore` を作る
     - 触るファイル: `packages/core/src/room-store.ts`、`packages/core/src/memory-room-store.ts`、`packages/core/src/memory-room-store.test.ts`(新規。スモークテスト)、`packages/core/src/index.ts`(再エクスポート)
     - design.md の 5.2 の interface(非同期、`createRoom`、`getRoomById`、`getRoomByCode`、`listRoomsByGeohashes`、`listActiveRoomCodes`、`addParticipant`、`removeParticipant`、`appendDrawing`、`listDrawings`、`deleteExpired`)を作る。`MemoryRoomStore` は `Map<roomId, …>` と `Map<roomCode, roomId>`。各メソッドは `await` を挟まず同期的に判定と更新を行う(原子性)
     - スモークテスト: 作成 → 取得、参加者の追加(満員は `full`)、絵の追加で `seq` が1から増えること、`deleteExpired` で部屋番号が再利用できること
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`
     - _Requirements: 10.1, 10.2, 10.3, 10.7, 10.9_
 
-  - [ ]* 4.4 `RoomStore` の契約テストのスイートを書く
+  - [x]* 4.4 `RoomStore` の契約テストのスイートを書く
     - 触るファイル: `packages/core/src/testing/room-store-contract.ts`(`runRoomStoreContract(name, createStore)`。`index.ts` からは export しない)、`packages/core/src/memory-room-store.test.ts`(スイートを呼ぶ)
     - 取得、一覧(1〜9マス、位置なしを含めない)、`addParticipant` の `full` / `identity_taken` / 冪等、`removeParticipant`、`appendDrawing`(`seq`、50枚の切り捨て)、`deleteExpired`(番号の再利用)、`createRoom` の `code_taken` と期限切れの置き換え。ファクトリを受け取るので、将来の DynamoDB 実装でも同じケースを実行できる
     - このスイートは必須の6つ(③、⑤)には数えない。③と⑤は `RoomService` のテスト(4.6、4.11)で満たす
     - **Property 12: `RoomStore` はモデルと同じ結果を返す**
     - **Validates: Requirements 10.3, 10.10, 13.5**
 
-  - [ ] 4.5 `RoomService`(作成・参加・退出・切断)を作る
+  - [x] 4.5 `RoomService`(作成・参加・退出・切断)を作る
     - 触るファイル: `packages/core/src/room-service.ts`(`RoomService`、`ServicePorts`、`RoomServiceOptions`、`OrderRoomSummaries` 型、`handleMessage`、`handleDisconnect`)、`packages/core/src/testing/room-service-fixture.ts`(テスト用の偽の `ServicePorts`、簡易版の並べ替え、種付きの乱数、連番の ID。`index.ts` からは export しない)、`packages/core/src/index.ts`(`room-service.js`、`clock.js` の再エクスポートを確認)
     - 作成(部屋番号の払い出し: ランダムに最大20回、その後 `listActiveRoomCodes` から選び、空きがなければ `internal_error`)、`Join`(`roomId` が先、`roomCode` は無視)、`JoinByCode`、`Leave`(参加していなければ `invalid_field`)、切断、満員(`room_full`)、他の部屋からの移動、再参加、`room_created`、`room_joined`、`participant_joined`、`participant_left`、`room_left` の送信、保持している絵の再送を実装する
     - 期限切れの部屋は、読み取り時に `room.expiresAt <= now` で「ない」ものとして扱う(`clock` は注入。既定は `systemClock`)
@@ -308,41 +308,41 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`、`npm.cmd test`
     - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.7, 6.8, 6.10, 6.11, 6.12, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.10, 7.11, 7.12, 7.13, 10.4, 10.5, 10.8_
 
-  - [ ] 4.6 部屋の作成と定員のテストを書く(必須③)
+  - [x] 4.6 部屋の作成と定員のテストを書く(必須③)
     - 触るファイル: `packages/core/src/room-service.create.test.ts`(新規。`room-service-fixture.ts` を使う)
     - 例示テスト: 有効な geohash で作成した部屋が、一意の `roomId`、4桁の `roomCode`、指定の `geohash`、`expiresAt = createdAt + ROOM_RETENTION_MS` を持つこと。位置なし(`geohash: null`)でも作成できること。6文字でない geohash は `invalid_field` で、部屋が増えないこと。8人まで参加でき、9人目は `room_full` で、既存の参加者と識別が変わらないこと
     - **Property 7**(部屋の作成)と **Property 8**(識別の重複なし、定員)の例示版
     - **Validates: Requirements 6.1, 6.2, 6.3, 6.10, 6.11, 13.1**
     - 完了の確認: `npm.cmd test`、`npm.cmd run lint`、`npm.cmd run typecheck`
 
-  - [ ] 4.7 `RoomService` の一覧と再送先の判定を作る
+  - [x] 4.7 `RoomService` の一覧と再送先の判定を作る
     - 触るファイル: `packages/core/src/room-service.ts`(`buildRoomList`、`Join{ roomId: null, roomCode: null }` の処理、`roomsChanged` の呼び出し、`selectListSubscribers(connections, roomGeohash)` の純関数)
     - `buildRoomList(geohash)`: `neighborCells` で最大9マス → `listRoomsByGeohashes` → 位置なしと期限切れを除く → 候補(`distance` は同じマスなら 0、そうでなければ 1。`sameHash` は `distance === 0`)→ 注入した `orderRooms` で並べ、先頭 `MAX_ROOMS` 件に切る。0件でもエラーにしない。不正な geohash は `invalid_field`(`Join` の場合)
     - 並べ替えは注入のままにする(Spec 0 のタスク 4.1 が入るまでは簡易版。差し替えはタスク 4.21)
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`、`npm.cmd run build`
     - _Requirements: 8.8, 8.9, 8.10, 8.11, 8.12, 8.13, 8.14, 8.15, 8.16, 7.9_
 
-  - [ ] 4.8 `RoomService` の絵の配布を作る
+  - [x] 4.8 `RoomService` の絵の配布を作る
     - 触るファイル: `packages/core/src/room-service.ts`(`DrawingSubmit` の処理)
     - 順に検査する: 部屋がない・期限切れは `room_not_found`、参加者でなければ `invalid_field`、`imageKey` の絵は `invalid_field`(`acceptImageKey` の既定は `false`)、`imageData.length > MAX_IMAGE_DATA_CHARS` は `message_too_large`(PNG の中身は検査しない)。エラーは送信者だけに返し、保存も配布もしない
     - 成功したら `appendDrawing`(最大50枚。古い絵を捨てる)→ `drawing_added` を送信者を含む全参加者へ送る。`sender` は参加者の識別
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`、`npm.cmd run build`
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 14.5_
 
-  - [ ] 4.9 絵の配布先のテストを書く(必須④)
+  - [x] 4.9 絵の配布先のテストを書く(必須④)
     - 触るファイル: `packages/core/src/room-service.drawing.test.ts`(新規)
     - 2つの部屋に参加者を置き、片方の部屋の参加者が絵を送ると、`drawing_added` が、その部屋の全員(送信者を含む)にちょうど1回ずつ届き、もう片方の部屋の接続には届かないことを確かめる。存在しない部屋は `room_not_found`、参加者でない接続は `invalid_field` で、エラーは送信者だけに届き、絵は保存されず配られないこと
     - **Property 15: 絵の配布先**
     - **Validates: Requirements 9.1, 9.3, 9.4, 13.1**
     - 完了の確認: `npm.cmd test`、`npm.cmd run lint`、`npm.cmd run typecheck`
 
-  - [ ] 4.10 期限切れの掃除を作る
+  - [x] 4.10 期限切れの掃除を作る
     - 触るファイル: `packages/core/src/room-service.ts`(`sweepExpired`)
     - `store.deleteExpired(clock.now())` を呼び、返された部屋の `geohash` ごとに `roomsChanged` を1回呼ぶ(`geohash` が `null` なら呼ばない)。削除した部屋の数を返す。掃除の前でも、期限切れの部屋は参加・一覧・描画で見えない(4.5、4.7、4.8 の読み取り時の判定)
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`、`npm.cmd run build`
     - _Requirements: 10.5, 10.6, 10.7, 14.6, 14.7_
 
-  - [ ] 4.11 期限切れのテストを書く(必須⑤)
+  - [x] 4.11 期限切れのテストを書く(必須⑤)
     - 触るファイル: `packages/core/src/room-service.expiry.test.ts`(新規)
     - `createManualClock` を `RoomService` に渡し、実時間を待たずに確かめる: 期限の直前は参加・一覧・描画ができ、`expiresAt` ちょうどでは参加と描画が `room_not_found` になり、一覧に出ないこと。`sweepExpired` の後、ID・部屋番号・絵のどれでも読み出せず、その部屋番号を新しい部屋に再利用できること。期限内の部屋と絵は消えないこと
     - **Property 17: 期限切れ**
@@ -359,7 +359,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - **Property 9: 部屋の引き方**、**Property 10: 参加時の通知と絵の再送**、**Property 11: 参加・退出の操作列とモデルの一致**、**Property 13: 一覧の中身**、**Property 14: 一覧の再送先**、**Property 16: 絵の保持**(50枚)、**Property 18: 配る絵のメッセージは上限に収まる**
     - **Validates: Requirements 7.1, 7.2, 7.4, 7.5, 7.9, 8.8, 8.11, 8.15, 9.2, 9.5, 11.1**
 
-  - [ ] 4.14 ポート設定と起動ガード(Windows 対応)を直す
+  - [x] 4.14 ポート設定と起動ガード(Windows 対応)を直す
     - 触るファイル: `apps/local-server/src/config.ts`(`InvalidPortError`、`parsePort(env)`)、`apps/local-server/src/index.ts`(起動ガードを `import.meta.url === pathToFileURL(process.argv[1] ?? '').href` に直す。`DEFAULT_PORT`、`startupMessage` は残す。`main(env, io)` を作り、`parsePort` が失敗したら標準エラーに `LOCAL_SERVER_PORT must be an integer from 1 to 65535 (got "<値>")` を出して終了コード 1)、`apps/local-server/src/config.test.ts`(新規。スモークテスト)
     - `parsePort`: 未設定は `DEFAULT_PORT`(8787)。1〜65535 の整数の10進数の文字列だけ受け入れる(空文字、前後の空白、小数、`1e3`、`0x50` は不正)
     - 既存の `index.test.ts` が通ること。サーバー本体の起動は 4.18 で足す(ここでは `main` は起動メッセージを出すだけ)
@@ -372,12 +372,12 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - **Property 26: ポート番号の読み取り**。不正な値で `main` が終了コード 1 とメッセージを出すこと(`exit` を注入して確かめる)。子プロセス(`process.execPath` と `tsx`)で起動ガードが働くこと(Windows でも起動メッセージが出ること)
     - **Validates: Requirements 12.5, 12.6, 12.7**
 
-  - [ ] 4.16 サーバーの小さな部品を作る
+  - [x] 4.16 サーバーの小さな部品を作る
     - 触るファイル: `apps/local-server/src/logger.ts`(`Logger`。位置・geohash・部屋番号・画像を出さない)、`apps/local-server/src/serial-queue.ts`(全接続共通の FIFO キュー。1つの処理が例外を投げても次を続ける)、`apps/local-server/src/connection-registry.ts`(接続ごとの `ConnectionState` と `WebSocket` の表)、それぞれの `*.test.ts`(スモークテスト)
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`
     - _Requirements: 14.3, 9.2_
 
-  - [ ] 4.17 `createLocalServer`(接続の処理)を作る
+  - [x] 4.17 `createLocalServer`(接続の処理)を作る
     - 触るファイル: `apps/local-server/src/server.ts`(`createLocalServer({ port, host?, logger?, clock?, sweepIntervalMs? })`)、`apps/local-server/src/order-rooms-fallback.ts`(Spec 0 のタスク 4.1 が入るまでの簡易な並べ替え。`sameHash` が先、`distance` 昇順、安定)、`apps/local-server/src/server.test.ts`(新規。スモークテスト)
     - `ws` の `WebSocketServer({ host: '0.0.0.0', port, path: '/ws', maxPayload: 1 MiB })`。接続ごとに `connectionId`(`crypto.randomUUID()`)と `ConnectionState`。バイナリフレームは `invalid_json`。バイト長が `MAX_MESSAGE_BYTES` を超えたら `message_too_large` を返して `RoomService` へ渡さず、接続は保つ(ちょうど上限は受け入れる)。`parseClientMessage` の失敗は `error.code` を返し、接続は保つ。成功したら直列キューに積み、`RoomService.handleMessage` の返す新しい状態で接続表を更新する。切断は `handleDisconnect` をキューに積む。30秒ごとの `ping` と、`pong` が来ない接続の `terminate()`
     - `RoomService` には `orderRooms: orderRoomsFallback`(簡易版)を渡す。並べ替えの差し替えは別タスク 4.21
@@ -385,7 +385,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`
     - _Requirements: 9.6, 9.7, 12.2, 12.10, 7.8, 14.1, 14.3_
 
-  - [ ] 4.18 一覧の再送と掃除のタイマーをつなぎ、`main` から起動する
+  - [x] 4.18 一覧の再送と掃除のタイマーをつなぎ、`main` から起動する
     - 触るファイル: `apps/local-server/src/server.ts`(`ports.roomsChanged`、掃除のタイマー)、`apps/local-server/src/index.ts`(`main` が `createLocalServer` を起動する)
     - `ports.roomsChanged(geohash)`: 接続表を走査し、`roomId === null` かつ `geohash !== null` で、接続の geohash が `neighborCells(部屋の geohash)` に含まれる接続だけに `buildRoomList(接続の geohash)` を送る(同じ geohash の接続には1回だけ作って使い回す)。参加中の接続と位置なしの接続には送らない。`selectListSubscribers`(4.7)を使う
     - 掃除: `setInterval` で `sweepExpired` をキューに積む(`sweepIntervalMs` の既定は `SWEEP_INTERVAL_MS`、`unref()`、`close()` で止める)
@@ -400,7 +400,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 必須の④(絵の配布先)は 4.9 の `RoomService` のテストで満たすので、このタスクは任意にする。ただし、要件 13.6 と 13.7 の自動テストは、このタスクを実施した場合にだけ満たされる
     - **Validates: Requirements 13.6, 13.7, 12.10, 9.6, 9.7, 8.15, 7.8, 10.6, 14.3**
 
-  - [ ] 4.20 `MESSAGE_SPECS` に新メッセージ8種類を追加する(Spec 0 のタスク 5.1 が前提)
+  - [x] 4.20 `MESSAGE_SPECS` に新メッセージ8種類を追加する(Spec 0 のタスク 5.1 が前提)
     - 前提: Spec 0 のタスク 5.1(`message-specs.ts` の `MESSAGE_SPECS` と `packages/core/README.md` の表)が `main` に入っていること。入っていなければ、このタスクは保留にする
     - 触るファイル: `packages/core/src/message-specs.ts`、`packages/core/README.md`(メッセージの表)
     - `create_room`、`join_by_code`、`room_created`、`room_joined`、`room_left`、`participant_joined`、`participant_left`、`drawing_added` を、それぞれ1回だけ追加する。`satisfies Record<…>` のコンパイルエラーが、追加漏れを知らせる。5.1 側ですでに登録済みなら、登録済みであることを確認するだけにする
@@ -408,14 +408,14 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`、`npm.cmd run build`
     - _Requirements: 11.8, 11.1, 11.11_
 
-  - [ ] 4.21 並べ替えを `orderRoomSummaries` に差し替える(Spec 0 のタスク 4.1 が前提)
+  - [x] 4.21 並べ替えを `orderRoomSummaries` に差し替える(Spec 0 のタスク 4.1 が前提)
     - 前提: Spec 0 のタスク 4.1(`room-list.ts` の `orderRoomSummaries`、`RoomCandidate`)が `main` に入っていること。入っていなければ、このタスクは保留にする
     - 触るファイル: `apps/local-server/src/server.ts`(`orderRooms` を core の `orderRoomSummaries` に差し替える)、`apps/local-server/src/order-rooms-fallback.ts`(削除)、`packages/core/src/testing/room-service-fixture.ts`(簡易版を `orderRoomSummaries` に差し替える)
     - 差し替え後に、`RoomService` のテストと `local-server` のテスト(4.19 を実施していれば統合テストも)を再実行する。`RoomCandidate` の型が design.md の形(`{ summary: RoomSummary; distance: number }`)と合うことを確認する
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`、`npm.cmd run build`
     - _Requirements: 8.10, 8.11, 8.16_
 
-  - [ ] 4.22 `apps/local-server/README.md`(英語)を書く
+  - [x] 4.22 `apps/local-server/README.md`(英語)を書く
     - 触るファイル: `apps/local-server/README.md`(新規)
     - design.md の 9 の骨子に従う: 何か、起動(`npm start -w apps/local-server`。Windows の PowerShell では `npm.cmd start -w apps/local-server`)、環境変数 `LOCAL_SERVER_PORT`(1〜65535 の整数。既定 8787。不正な値は終了コード 1)、エンドポイント(`ws://0.0.0.0:<port>/ws`)、上限(1メッセージ 32,768 バイト。超えると `message_too_large` で接続は保つ。1 MiB を超えると `ws` が接続を閉じる。1部屋8人、絵50枚、部屋は3時間で消える)、プライバシー(緯度経度・IP・名前を保存しない。ログに位置・画像を出さない)、LAN での公開への注意(認証なし)
     - ルートの `README.md` は変更しない

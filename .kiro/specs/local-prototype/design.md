@@ -641,7 +641,7 @@ sequenceDiagram
 |---|---|---|
 | 接続状態(`ConnectionState`)の保存 | メモリの `Map` | DynamoDB の接続表 |
 | `ports.send` | `ws.send` | `postToConnection` |
-| `ports.roomsChanged` | 接続表を走査し、一覧の購読者へ `buildRoomList` を送る | 接続表(GSI: geohash)を引いて送る |
+| `ports.roomsChanged` | geohash を溜め、接続表の更新後にまとめて、一覧の購読者へ `buildRoomList` を送る(7.2 参照) | 接続表(GSI: geohash)を引いて送る |
 | 直列化 | 全接続で1本のキュー | なし(並行する)。`seq` と `drawingId` で画面側が耐える |
 | 期限切れの掃除 | `setInterval` | DynamoDB TTL(と `RoomService` の読み取り時の判定) |
 
@@ -680,7 +680,7 @@ export class InvalidPortError extends Error {}
 export function parsePort(env: Record<string, string | undefined>): number;
 ```
 
-- `main(env, io)`: `parsePort` が `InvalidPortError` なら、標準エラーに `LOCAL_SERVER_PORT must be an integer from 1 to 65535 (got "<値>")` を出し、終了コード 1 で終わる(要件 12.7)。成功なら `startupMessage(port)` を標準出力へ出す。
+- `main(env, io)`: `parsePort` が `InvalidPortError` なら、標準エラーに `LOCAL_SERVER_PORT must be an integer from 1 to 65535 (got "<値>")` を出し、終了コード 1 で終わる(要件 12.7)。成功なら `startupMessage(port)` を標準出力へ出す。`startupMessage(port)` は `local-server: listening on ws://localhost:<port>/ws` を返す(最初の仮実装の `not implemented yet` から変えた。起動が実際に動くようになったため)。
 - 起動ガード: `import.meta.url === pathToFileURL(process.argv[1] ?? '').href` のときだけ `main` を実行する(Windows でも動く)。
 - `createLocalServer(options: { port: number; host?: string; logger?: Logger; clock?: Clock; sweepIntervalMs?: number }): Promise<{ port: number; close(): Promise<void> }>`。テストでは `port: 0`(空きポート)を使う。
 
@@ -706,6 +706,7 @@ flowchart TD
 - **切断**: `close` で `handleDisconnect(state)` をキューに積み、接続表から消す。
 - **keep-alive**: 30秒ごとに `ping` を送り、前回の `pong` が来ていない接続は `terminate()` する(電波が切れたスマホが参加者として残らないように)。
 - **一覧の再送**(`ports.roomsChanged(geohash)`): 接続表を走査し、`roomId === null` かつ `geohash !== null` で、接続の `geohash` が `neighborCells(部屋の geohash)` に含まれる接続へ、`buildRoomList(接続の geohash)` を送る(要件 8.15)。近傍の関係が対称なので、「接続のマスの近傍に部屋がある」と「部屋のマスの近傍に接続がある」は同じ。同じ `geohash` の接続には、`buildRoomList` を1回だけ呼んで使い回す。参加中の接続と位置なしの接続には送らない。
+- **一覧の再送のタイミング**(実装で変えた点): `roomsChanged` はその場では送らず、geohash を溜めておく。キュー内の `handleMessage`・`handleDisconnect`・`sweepExpired` が終わり、接続表を新しい `ConnectionState` で更新した後に、まとめて一覧を再送する。理由: `roomsChanged` が呼ばれる時点では、部屋を作った(または参加した)本人の状態が接続表でまだ `roomId === null` のままで、その場で送ると本人にも一覧が届いてしまうため。
 - **期限切れの掃除**: `setInterval(() => queue.push(() => service.sweepExpired()), SWEEP_INTERVAL_MS)`(30秒。`unref()` して、プロセスの終了を妨げない)。`close()` で止める。
 - **接続状態の更新**: `handleMessage` が返した新しい `ConnectionState` で、接続表を更新する。
 
@@ -1239,7 +1240,7 @@ export default defineConfig({
 | `parser.test.ts`(追記) | 新メッセージの例示と、Property 1〜4 | 例示 + PBT |
 | `geohash.test.ts` | Property 5、6。内部のマス `xn76ur`(8つの近傍、自分を含まない)、経度の東端 `xypzpg`(`8n0p…` を含む9マス)、北端 `upzpgx`(6マス)、南端 `h0p058`(6マス)。`NaN` と緯度91の拒否 | PBT + 例示 |
 | `participant-identity.test.ts` | `pickIdentity`:使用済みを避ける、96通りから選ぶ、空きがなければ `null` | 例示 + PBT(Property 8 の一部) |
-| `memory-room-store.test.ts` | `runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore())`。Property 12 と、各操作の例示 | 契約 |
+| `memory-room-store.test.ts` | `runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore())`。Property 12 と、各操作の例示。unRoomStoreContract は 	esting/room-store-contract.ts にあり、@doodle-nearby/core/testing(package.json の exports)から公開する。aws-deploy の DynamoDbRoomStore も同じ契約を使う | 契約 |
 | `room-service.test.ts` | 作成、ID・番号での参加、退出、定員、絵の配布、期限切れ(要件 13.1)。Property 7〜11、13〜18。エラーケースごとに、状態が変わらないこと(要件 13.2):満員、番号が一致しない、ID が存在しない、期限切れ。部屋番号の枯渇(10,000個)の例示。`roomsChanged` の呼ばれ方 | 例示 + PBT |
 | `room-service.subscribers.test.ts` | Property 14。再送先を選ぶ純関数 `selectListSubscribers(connections, roomGeohash)`(`room-service.ts` の隣に置く)を使う | PBT |
 
