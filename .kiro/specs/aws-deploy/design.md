@@ -27,15 +27,15 @@ local-prototype の `RoomService` を、API Gateway WebSocket + Lambda + DynamoD
 | プラン | このアカウントは Paid プラン(`accountPlanType: PAID`)。使うサービス(API Gateway、Lambda、DynamoDB、S3、CloudFront、CloudFormation、CloudWatch Logs)はすべて対応済み | `GetAccountPlanState`、対応サービスの一覧 |
 | SCP | `iam:CreateRole` などを拒否するのは `role/managed/*` だけ。CDK が作る Lambda の実行ロールは対象外 | プロジェクトの SCP の文書 |
 | ブートストラップ | `CDKToolkit` は作成済み(ap-southeast-2、バージョン 34)。`GithubOidcStack` も作成済み | `ListStacks`、SSM |
-| Lambda の同時実行 | アカウントの上限は **10**(予約もできない) | `GetAccountSettings` |
+| Lambda の同時実行 | アカウントの上限は **1,000**(10 から引き上げ済み。`GetAccountSettings` で確認)。予約は設定しない | `GetAccountSettings` |
 | CDK の WebSocket | `aws-cdk-lib/aws-apigatewayv2` の `WebSocketApi` / `WebSocketStage` と、`aws-apigatewayv2-integrations` の `WebSocketLambdaIntegration` が使える | CDK の README |
 
 ### 未確認の点(実装の最初に確認する)
 
 1. **CloudFront 経由の WebSocket が、API Gateway(ステージ `ws`)まで通ること。** 設計の根拠は文書と事例で、このアカウントで動かした実績はない。最初のタスクで、空のハンドラーで疎通を確かめる(決定事項 1)
 2. `node_modules` が未インストールの作業環境では、CDK のバージョンと `esbuild` の有無を確認できなかった。実装の最初に `npm ci` して、`aws-cdk-lib` のバージョンと `OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER`、`NodejsFunction` の `esbuildArgs` を確認する
-3. local-prototype のタスク 4.4(契約テストのスイート)がまだない。`deleteExpired` の扱い(要件 4.8)と、`./testing` の export(local-prototype の design 5.2)を、この Spec に合わせて決める。決定事項 4 を参照
-4. `RoomService` が `ports.roomsChanged` を `await` するか。しないなら、ハンドラー側で未完了の送信を待つ(下の「ポートの実装」)
+3. 契約テストのスイート `runRoomStoreContract` は、S 側の `@doodle-nearby/core/testing` にすでにある。この Spec は使うだけで、作らない。`deletesImmediately` のオプションは S 側で追加される予定で、追加されるまで、タスク 3.5、3.6 は保留にする(タスク 2.2 で確認する)。`deleteExpired` は TTL に任せ、契約は `deletesImmediately: false` で通す。決定事項 4 を参照
+4. `RoomService` が `ports.roomsChanged` を `await` するか。この設計は、どちらでも動くようにしてある。`roomsChanged` は geohash を記録するだけで、一覧の送信はハンドラーが接続状態の保存のあとに行う。`send` の完了は `pending` で待つ(下の「ポートの実装」)
 
 ---
 
@@ -91,7 +91,7 @@ flowchart LR
 | `tests/smoke/run.ts` | スモークテスト(`npm run smoke`) |
 | `docs/deploy.md`、`docs/judges.md` | 英語の運用手順と審査員向けの手順 |
 
-`packages/core` と `apps/local-server`、`apps/web` は、この Spec では変更しない。ただし、`runRoomStoreContract` を `backend/lambdas` から使うために、local-prototype の design 5.2 にある `./testing` の export と `coreAlias` の追加が要る(タスクで行う。決定事項 4)。
+`packages/core`、`apps/local-server`、`apps/web` は、この Spec では変更しない。契約テストのスイート `runRoomStoreContract`(`@doodle-nearby/core/testing`)は S 側にあるものを使い、`./testing` の export や `coreAlias` も足さない(決定事項 4)。
 
 ---
 
@@ -138,7 +138,7 @@ flowchart LR
 | `removeParticipant` | `GetItem` で識別を調べ、`UpdateItem`: `REMOVE participants.#c DELETE identities :idset`、条件 `attribute_exists(participants.#c)`。条件失敗(すでに外れている)なら読み直して返す。項目がなければ `null` | 識別は接続ごとに固定なので、読み取りと更新の間にずれない |
 | `appendDrawing` | `UpdateItem`: `ADD nextSeq :one`、条件 `attribute_exists(pk)`、`ReturnValues: ALL_NEW` で `seq` と `ttl` を得る。続けて絵を `Put`(`ttl` は部屋と同じ)。`seq > maxDrawings` なら `seq - maxDrawings` の絵を `DeleteItem` | `seq` の割り当ては原子的。割り当てのあと `Put` の前に落ちると、欠番ができる(許容。並びは `seq` で決まる) |
 | `listDrawings` | `Query`(`pk`、`sk begins_with DRAWING#`、昇順、`ConsistentRead`)。**`LastEvaluatedKey` が返らなくなるまで `ExclusiveStartKey` で繰り返し、全ページを連結して全件を返す**。1回の `Query` が返すのは最大 1MB で、50枚 × 約 30KB = 約 1.5MB の部屋は1回では収まらないため。途中で止めたり、`Limit` で切ったりしない。`listRoomsByGeohashes` と `listActiveRoomCodes`(`Scan`)も同じ | — |
-| `deleteExpired(now)` | TTL が消すので、積極的には消さない。読み取り可能なまま残っている期限切れの部屋(`geohash` の GSI から引ける分)を `Query` して削除し、消した部屋を返す実装にするかは、決定事項 4 で決める | — |
+| `deleteExpired(now)` | **TTL に任せる。** 何も消さず `[]` を返す実装にする。読み取れる期限切れの部屋を消すかどうかは任意で、この Spec では入れない(期限切れの部屋は、`RoomService` が読み取り時に隠す)。契約テストは `deletesImmediately: false` で通す(決定事項 4) | — |
 
 `ExpressionAttributeNames` / `Values` は、純関数で組み立てる(`dynamo-keys.ts`)。接続 ID は `#c` で渡し、式に直接埋め込まない。
 
@@ -171,13 +171,13 @@ export function createWsHandler(deps: HandlerDeps): (event: WsEvent) => Promise<
 flowchart TD
   e[イベント] --> r{routeKey}
   r -- $connect --> c1[接続状態 geohash null, roomId null を保存] --> ok[200]
-  r -- $disconnect --> d1[状態を読む] --> d2[あれば handleDisconnect] --> d3[状態を削除] --> ok
+  r -- $disconnect --> d1[状態を読む] --> d2[あれば handleDisconnect] --> d3[状態を削除] --> f1[記録した geohash の一覧を送る] --> ok
   r -- $default --> b{本文}
   b -- バイナリ --> e1[error invalid_json]
   b -- "> MAX_MESSAGE_BYTES" --> e2[error message_too_large]
   b -- テキスト --> p[parseClientMessage]
   p -- 失敗 --> e3[error code]
-  p -- 成功 --> s[状態を読む / なければ空] --> h[RoomService.handleMessage] --> w[新しい状態を保存] --> ok
+  p -- 成功 --> s[状態を読む / なければ空] --> h[RoomService.handleMessage] --> w[新しい状態を保存] --> f2[記録した geohash の一覧を送る] --> ok
 ```
 
 - **サイズの検査**: `Buffer.byteLength(body)` を、パースの前に測る。ちょうど `MAX_MESSAGE_BYTES` は受け付ける(local-server と同じ)。
@@ -188,25 +188,42 @@ flowchart TD
 
 #### 2.1 ポートの実装
 
+一覧の再送は、local-server と同じ順序にする。`roomsChanged` は変わった geohash を**記録するだけ**にし、一覧の送信は、ハンドラーが**接続状態を保存したあと**に行う。こうすると、操作した本人の状態(部屋に入った、`roomId` が入った)が先に保存され、本人は購読者(部屋に入っていない接続)から外れているので、部屋に入った直後の本人に不要な `room_list` が届かない。
+
 ```ts
 // ports.ts
+export type RoomListFlusher = {
+  /** 変わった geohash の一覧(重複なし) */
+  changed: Set<string>;
+  /** 記録した geohash の近傍にいる購読者へ一覧を送る。接続状態の保存のあとに呼ぶ */
+  flush(): Promise<void>;
+};
+
 export function createPorts(args: {
   endpoint: string;                 // https://<domainName>/<stage>
   sender: HandlerDeps['sender'];
   connections: ConnectionStore;
   buildRoomList: (geohash: string) => Promise<RoomList>;
-  pending: Promise<unknown>[];      // 完了を待つための一覧
-}): ServicePorts;
+  pending: Promise<unknown>[];      // send の完了を待つための一覧
+}): { ports: ServicePorts; flusher: RoomListFlusher };
 ```
 
-- `send(connectionId, message)`: `JSON.stringify` して `postToConnection`。`GoneException`(410)と他の失敗は、その接続だけ無視する。接続が消えていた場合は、その接続状態を削除する(要件 5.4)。送ったメッセージが `MAX_MESSAGE_BYTES` を超えるときは、送らずにログだけ残す(起きない想定。絵は 30,000 文字以内に制限済み)。
-- `roomsChanged(geohash)`:
-  1. `neighborCells(geohash)` の各マスで、`connections.listSubscribers(cell)`(GSI、`CONN#`)を引く。
-  2. 購読者を、その接続の `geohash` ごとにまとめ、`buildRoomList` を1回ずつ呼ぶ。
+- `send(connectionId, message)`: `JSON.stringify` して `postToConnection`。`GoneException`(410)と他の失敗は、その接続だけ無視する。接続が消えていた場合は、その接続状態を削除する(要件 5.4)。送ったメッセージが `MAX_MESSAGE_BYTES` を超えるときは、送らずにログだけ残す(起きない想定。絵は 30,000 文字以内に制限済み)。返した `Promise` は `pending` にも積む。
+- `roomsChanged(geohash)`: `changed` に geohash を足すだけ。DynamoDB にも API Gateway にも触れず、すぐ戻る。
+- `flusher.flush()`:
+  1. `changed` の各 geohash について、`neighborCells(geohash)` の各マスで `connections.listSubscribers(cell)`(GSI、`CONN#`)を引く。
+  2. 購読者を `connectionId` で重複なしにまとめ、その接続の `geohash` ごとに分けて、`buildRoomList` を1回ずつ呼ぶ。
   3. 最大10接続ずつ並行して送る(要件 5.5)。
-- 呼び出しで返した `Promise` は `pending` にも積み、ハンドラーが `return` の前に `allSettled` で待つ(`RoomService` が `await` しない場合でも、送信が切られないように)。
-- 購読者を GSI から引く時点では、操作した本人の状態がまだ保存されていない(`handleMessage` の戻りで保存する)ので、本人にも一覧が1回届きうる。local-server も同じ順序(状態は `handleMessage` のあとに更新)なので、そろえる。画面は部屋に入ったあとの `room_list` を無視する前提か、実装時に確認する。
+  4. 終わったら `changed` を空にする。
 
+ハンドラーでの呼び出し順(`$default`):
+
+1. 接続状態を読む → `handleMessage`(この間、`roomsChanged` は記録だけ)→ **新しい接続状態を保存**。
+2. `flusher.flush()`(購読者は、保存後の状態で引く)。
+3. `pending` を `allSettled` で待つ。
+4. `return`。
+
+`$disconnect` では、`handleDisconnect` → **接続状態を削除** → `flush()` → `pending` を待つ。`handleMessage` が例外を投げた場合も、状態を保存できる範囲で保存してから `flush()` する(記録された geohash があれば)。`RoomService` が `roomsChanged` を `await` してもしなくても、記録だけなので結果は変わらない。
 #### 2.2 接続状態の保存(`ConnectionStore`)
 
 ```ts
@@ -370,7 +387,7 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 | DynamoDB の一時的な失敗(スロットル) | AWS SDK の既定の再試行に任せる。それでも失敗したら `internal_error` |
 | `postToConnection` が 410 | その接続を無視し、接続状態を削除 |
 | `$disconnect` で状態が見つからない | 何もしない(`$connect` の書き込みが失敗した、または TTL で消えた) |
-| Lambda の同時実行がアカウントの上限(10)に達する | API Gateway のその呼び出しが失敗する。画面は応答が返らない(下のリスク) |
+| Lambda の同時実行がアカウントの上限(1,000)に達する | API Gateway のその呼び出しが失敗する。画面は応答が返らない。スロットリング(20 req/秒)× 約 0.4 秒 ≒ 約 8 同時なので、通常は届かない(リスク 1) |
 | CloudFront / API Gateway が 10 分間アイドルで切断、または2時間で切断 | 画面の「接続が切れた」表示(`Back to start`)。`docs/judges.md` に書く |
 
 ---
@@ -397,7 +414,7 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 - CloudFront と S3(Web 約 200KB × 端末数)は、1,000回でも数セント以下。
 - 費用の主な項目は DynamoDB の絵の書き込み(1枚 約 30 WRU)と、絵1枚ごとの 9 通のメッセージ。
 
-**悪用されたとき**: ステージのスロットリング(**20 req/秒、バースト 40**)が、受け付けるメッセージ数の上限を決める。前提は、Lambda の同時実行の引き上げ(1,000)が承認されて、Lambda の上限が効かなくなること。スロットリングはクライアントから受けるメッセージだけを数え、`postToConnection` の送信は数えない。そのため、8人の部屋への `drawing_submit` 1通が 9 通の課金になる。最悪の場合は、20 回/秒がすべて 8人の部屋への `drawing_submit`(約 30KB)で、30日(259万2千秒)続く場合で、次のとおり。
+**悪用されたとき**: ステージのスロットリング(**20 req/秒、バースト 40**)が、受け付けるメッセージ数の上限を決める。Lambda の同時実行の上限は 1,000 に引き上げ済みで、Lambda の上限は実質的に効かない(20 req/秒 × 約 0.4 秒 ≒ 約 8 同時)。スロットリングはクライアントから受けるメッセージだけを数え、`postToConnection` の送信は数えない。そのため、8人の部屋への `drawing_submit` 1通が 9 通の課金になる。最悪の場合は、20 回/秒がすべて 8人の部屋への `drawing_submit`(約 30KB)で、30日(259万2千秒)続く場合で、次のとおり。
 
 | 項目 | 計算 | 1 か月の上限の目安 |
 |---|---|---|
@@ -406,7 +423,7 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 | Lambda | 20 回/秒 × 約 0.4 秒 × 0.25GB = 2 GB秒/秒 → 約 520万 GB秒、リクエスト 約 5,200万回 | 約 80 USD |
 | 合計 | | **約 1,550 USD** |
 
-- 同時実行がまだ 10 のままなら、Lambda の上限(約 25 回/秒)よりスロットリング(20 回/秒)のほうが低いので、上限は同じ約 1,550 USD である。承認の前後で、上限は変わらない。
+- 同時実行の上限が 1,000 になったので、受け付ける量の上限を決めるのはスロットリング(20 回/秒)だけである。引き上げの前(上限 10、約 25 回/秒)も、スロットリングのほうが低かったので、上限の金額は同じ約 1,550 USD である。
 - 前の案(50 req/秒)のままなら、承認後の上限は約 3,900 USD になる。20 req/秒で、その約 4 割に抑える。
 - スロットリングは API 全体に対して1つで、接続ごとではない。1人の攻撃者が上限を使い切ると、ほかの利用者のメッセージもスロットリングで拒否される(可用性の低下)。通常の利用(1人が数秒に1枚)では、20 req/秒に達しない。
 - 現実にこうなるには、8接続を自分で作った攻撃者が、1か月ずっと続ける必要がある。最終的な歯止めは AWS Settings の**支出上限(spend limit)**(要件 8.6)。上限を超えるとプロジェクトが止まるので、止まった場合の確認手順を `docs/deploy.md` に書く。
@@ -421,7 +438,7 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 | 対象 | 方法 | 場所 |
 |---|---|---|
 | `dynamo-keys.ts` | 例示テストと Property 1、2(fast-check) | `backend/lambdas/src/dynamo-keys.test.ts` |
-| `DynamoDbRoomStore` | 契約テスト `runRoomStoreContract` を、一時テーブル(実際の DynamoDB)で実行。`RUN_AWS_INTEGRATION=1` のときだけ | `backend/lambdas/src/dynamodb-room-store.integration.test.ts` |
+| `DynamoDbRoomStore` | S 側の契約テスト `runRoomStoreContract` を、`deletesImmediately: false` で、一時テーブル(実際の DynamoDB)で実行。`RUN_AWS_INTEGRATION=1` のときだけ | `backend/lambdas/src/dynamodb-room-store.integration.test.ts` |
 | `handler.ts`、`ports.ts` | 偽の `ConnectionStore` と偽の送信、`MemoryRoomStore` + 実物の `RoomService` で、Property 3〜6 と要件 3、5 | `backend/lambdas/src/handler.test.ts` |
 | CDK | Template の細かいアサーション(要件 10.2)、Region が固定されていないこと。**`/ws` の behavior が `Host` ヘッダーを転送しない**ことの確認(下記)。ManageConnections の権限が、`grantManageConnections` の場合は この API の ARN に、`*` に戻した場合は `@connections/*` に絞られていること | `infra/lib/*.test.ts` |
 | 全体 | `npm run smoke -- <PublicUrl>`(手動。デプロイのあと) | `tests/smoke/run.ts` |
@@ -439,7 +456,7 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 
 | # | リスク | 影響 | 対応案 |
 |---|---|---|---|
-| 1 | **Lambda の同時実行の上限が 10**。予約もできない | 審査員が同時に多数使うと、メッセージの処理が失敗する。1メッセージ約 100ms なら、10 同時でも毎秒約 100 通まで | 申請してから上限を上げる(Service Quotas)。または、新規アカウントの自動引き上げを待つ。デプロイ前にも後にも確認する |
+| 1 | Lambda の同時実行の上限は 1,000 に引き上げ済み(以前は 10)。予約は設定しない | 通常の利用ではスロットリング(20 req/秒 × 約 0.4 秒 ≒ 約 8 同時)が先に効くので、上限には届かない。届いた場合は、その呼び出しが失敗する | 追加の対応は不要。7.2 で `GetAccountSettings` を再確認する。上限が下がっていた場合は、Service Quotas で再申請する |
 | 2 | GSI は結果整合 | 部屋の作成や人数の変化の直後に、一覧の再送が古い内容になることがある(通常は数十ミリ秒)。次の変化で直る | 許容する。許容できない場合は、一覧用の項目を本表に持ち、更新を同じトランザクションにする(書き込みが増える) |
 | 3 | CloudFront 経由の WebSocket が未検証 | 通らなければ、画面が WebSocket につながらない | 最初のタスクで疎通。通らなければ決定事項 1 の代替案 |
 | 4 | 同じ接続の2通が並行して処理される | 状態の読み書きが競合しうる | 画面の送信順で通常は起きない。起きても、部屋の整合性はストアが守る |
@@ -458,8 +475,8 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 | 1 | WebSocket は CloudFront の `/ws` を経由する(同じオリジン)。**代替案**: 直接 `wss://<apiId>.execute-api.ap-southeast-2.amazonaws.com/ws` につなぎ、画面に `VITE_WS_URL` を足し、`cd.yml` の Web ビルドの前に `WebSocketUrl` の出力を環境変数に渡す。この案は画面と `cd.yml` の変更が要る。CloudFront 経由が通らないときだけ、所有者の了承を得て採る |
 | 2 | `DynamoDbRoomStore` と `ConnectionStore` は `backend/lambdas` に置き、core に AWS SDK を入れない |
 | 3 | 画面からの keep-alive(`ping`)は、この Spec では足さない。メッセージ型を変えるため。10 分の放置で切れる制限は、文書に書く。足す場合は local-prototype に近い別の小さな Spec で行う |
-| 4 | `deleteExpired` と契約テスト: DynamoDB は TTL で消えるので、`deleteExpired` を「読み取れる期限切れの部屋を消す」実装にするか、空の実装にするかを、local-prototype のタスク 4.4 の前に決める。契約テストが「`deleteExpired` のあと `getRoomById` が `null`」を求める場合は、前者にする。また `./testing` の export と `coreAlias` の追加を、この Spec のタスクで行う(local-prototype の Spec は、仕様の修正として別コミットにする) |
-| 5 | Lambda の予約同時実行は設定しない(アカウントに余裕がない)。同時実行の上限は 1,000 への引き上げを申請中(承認後は、受け付ける量の上限をスロットリング 20 req/秒、バースト 40 が決める。リスク 9) |
+| 4 | 契約テストのスイート `runRoomStoreContract` は S 側(`@doodle-nearby/core/testing`)にあり、この Spec は使うだけにする。`./testing` の export と `coreAlias` も S 側にあるものを使い、この Spec では足さない。**`deleteExpired` は TTL に任せ、読める期限切れの部屋を消すかどうかは任意とする(この Spec の実装は何も消さず `[]` を返す)。契約は `deletesImmediately: false` で通す(`DynamoDbRoomStore` は false で呼ぶ)。** 期限切れの `roomCode` の置き換え(`createRoom`)で古い部屋と絵を消すことは、`deleteExpired` とは別で、契約が求めるなら実装する。S 側の契約テストに足りないケースは、S 側に依頼するか、統合テストの追加ケースとして書く |
+| 5 | Lambda の予約同時実行は設定しない(予約する必要がない)。同時実行の上限は 1,000 に引き上げ済み(`GetAccountSettings` で確認)。受け付ける量の上限は、スロットリング 20 req/秒、バースト 40 が決める(リスク 9) |
 | 6 | Budgets と CloudWatch アラームは作らない。支出上限は AWS Settings で所有者が設定する |
 | 7 | API Gateway のアクセスログは有効にしない(アカウント全体の設定が要る)。ログは Lambda だけ |
 | 8 | CSP ヘッダーは入れない(Safari の `connect-src 'self'` と `wss:` の扱いの違いが不確かなため) |

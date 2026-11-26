@@ -23,7 +23,7 @@ Spec「local-prototype」で作るローカル試作(`apps/web`、`apps/local-se
 
 ### 前提(依存)
 
-- Spec「local-prototype」のタスク 4.3〜4.11、4.20、4.21(`RoomStore`、`MemoryRoomStore`、契約テストのスイート、`RoomService`、`MESSAGE_SPECS`、`orderRoomSummaries`)と、グループ W(`apps/web`)が完了していること。`RoomService` は現時点では未実装である
+- Spec「local-prototype」のタスク 4.3〜4.11、4.20、4.21(`RoomStore`、`MemoryRoomStore`、契約テストのスイート `runRoomStoreContract`(`@doodle-nearby/core/testing`。S 側にあり、この Spec では作らない)、`RoomService`、`MESSAGE_SPECS`、`orderRoomSummaries`)と、グループ W(`apps/web`)が完了していること。`RoomService` は現時点では未実装である
 - Spec「repo-and-ci」の `GithubOidcStack`、`cd.yml`、CDK ブートストラップ(アカウントに作成済み。修飾子 `hnb659fds`、バージョン 34)が使えること
 - `GithubOidcStack` は CD の対象外(`DoodleNearby*` ではない)で、この Spec では変更しない。変更が必要になった場合は、所有者が手動でデプロイする別作業として扱う(design の「未確認の点」を参照)
 
@@ -92,7 +92,7 @@ AI 司会者(Bedrock)、AI ボット、交換カード、協力お題、カス�
 4. WHEN the body of a message is larger than `MAX_MESSAGE_BYTES` bytes, THE Ws_Handler SHALL send the sender an ErrorMessage with the code `message_too_large`, SHALL NOT pass the message to the `RoomService`, and SHALL keep the connection open.
 5. WHEN the body of a message is binary, is not valid JSON, or fails the parser, THE Ws_Handler SHALL send the sender an ErrorMessage with the code returned by the parser (`invalid_json` for binary), SHALL NOT change any room, and SHALL keep the connection open.
 6. WHEN the `$disconnect` route runs, THE Ws_Handler SHALL call `RoomService.handleDisconnect` with the stored Connection_State and delete the stored Connection_State.
-7. THE Ws_Handler SHALL implement the `ServicePorts` of the `RoomService` as follows: `send` posts the JSON message to the connection through the API Gateway management API and ignores a gone connection (HTTP 410) and other send failures for that one connection; `roomsChanged` sends an updated RoomList to every connection that is not in a room and whose Geohash has the changed Geohash in its Neighbor_Cells, as the local server does (local-prototype の要件 8.15).
+7. THE Ws_Handler SHALL implement the `ServicePorts` of the `RoomService` as follows: `send` posts the JSON message to the connection through the API Gateway management API and ignores a gone connection (HTTP 410) and other send failures for that one connection; `roomsChanged` only records the changed Geohash, and after the Ws_Handler has saved the sender's Connection_State it sends an updated RoomList to every connection that is not in a room and whose Geohash has a changed Geohash in its Neighbor_Cells, as the local server does (local-prototype の要件 8.15).
 8. THE Ws_Handler SHALL NOT throw an unhandled exception for any client input. An internal failure SHALL produce an ErrorMessage with the code `internal_error` to the sender when possible.
 9. THE Ws_Handler SHALL send no single message larger than `MAX_MESSAGE_BYTES` bytes.
 10. THE Ws_Handler SHALL write no Geohash, room code, `imageData`, or IP address to its logs. It MAY log the message `type`, the byte length, the error code, and the first 8 characters of the connection ID.
@@ -108,13 +108,13 @@ AI 司会者(Bedrock)、AI ボット、交換カード、協力お題、カス�
 #### Acceptance Criteria
 
 1. THE Dynamo_Store SHALL implement every method of the `RoomStore` interface from `packages/core` without changing the interface, and SHALL NOT be placed in `packages/core` (so that `packages/core` has no AWS SDK dependency).
-2. THE Dynamo_Store SHALL pass the shared contract test suite `runRoomStoreContract` that `MemoryRoomStore` passes, without skipping cases that apply to a store without an explicit sweep (see requirement 4.8).
+2. THE Dynamo_Store SHALL pass the shared contract test suite `runRoomStoreContract` that the local-prototype Spec provides in `@doodle-nearby/core/testing` and that `MemoryRoomStore` passes (this Spec uses the suite and does not create it), called with `deletesImmediately: false`, without skipping cases that apply to a store without an explicit sweep (see requirement 4.8).
 3. WHEN two `addParticipant` calls race for the last free place of a room, THE Dynamo_Store SHALL accept exactly one of them and return `full` to the other.
 4. WHEN two `addParticipant` calls race with the same Participant_Identity in one room, THE Dynamo_Store SHALL accept exactly one of them and return `identity_taken` to the other.
 5. WHEN two `createRoom` calls race for the same `roomCode`, THE Dynamo_Store SHALL create exactly one room and return `code_taken` to the other. A `roomCode` held only by an expired room SHALL be reusable.
 6. THE Dynamo_Store SHALL assign `seq` values to Drawings of one room as strictly increasing integers starting at 1 in the order the Drawings are accepted, with no duplicate, and SHALL keep at most `maxDrawings` Drawings per room by deleting the oldest.
 7. THE Dynamo_Store SHALL read rooms, drawings, and room-code reservations with strongly consistent reads, and SHALL follow `LastEvaluatedKey` on every query it makes until the last page, so that `listDrawings` returns all retained Drawings (up to 50 Drawings of about 30KB each, which exceed the 1MB limit of one query page) in ascending `seq` order.
-8. THE Dynamo_Store SHALL store `expiresAt` in epoch milliseconds, SHALL add a TTL attribute in epoch seconds to every item, and SHALL implement `deleteExpired` so that the contract holds. WHERE the table's TTL already removes expired items, `deleteExpired` MAY remove only the items that are still readable and expired.
+8. THE Dynamo_Store SHALL store `expiresAt` in epoch milliseconds and SHALL add a TTL attribute in epoch seconds to every item. THE Dynamo_Store SHALL leave the removal of expired items to the TTL: `deleteExpired` MAY remove nothing and return an empty list, and it is optional to remove expired rooms that are still readable. THE contract suite SHALL pass with `deletesImmediately: false`.
 9. THE Dynamo_Store SHALL store no participant name, IP address, device ID, or latitude and longitude. It SHALL store the Geohash only as the 6-character cell.
 10. THE Dynamo_Store SHALL use only the AWS SDK for JavaScript v3 and SHALL NOT scan the Table on any path that runs per message (a scan is allowed only for `listActiveRoomCodes`, which is a rare fallback).
 
@@ -128,7 +128,7 @@ AI 司会者(Bedrock)、AI ボット、交換カード、協力お題、カス�
 
 1. THE system SHALL store each Connection_State in the Table from `$connect` until `$disconnect`, and SHALL give it a TTL of 3 hours from the last update so that a lost `$disconnect` event leaves no item forever.
 2. WHEN a connection has a Geohash and is not in a room, THE system SHALL be able to find that connection by its Geohash without scanning the Table.
-3. WHEN `RoomService` calls `roomsChanged(geohash)`, THE Ws_Handler SHALL send the RoomList only to the connections described in requirement 3.7, and SHALL build the RoomList once per distinct Geohash among them.
+3. WHEN `RoomService` calls `roomsChanged(geohash)`, THE Ws_Handler SHALL only record the Geohash at that moment, and SHALL send the RoomList after the Connection_State of the sender has been saved (or deleted, for `$disconnect`), only to the connections described in requirement 3.7, building the RoomList once per distinct Geohash among them. THE sender that has just entered a room SHALL NOT receive that RoomList.
 4. IF sending to a connection fails because the connection is gone, THEN THE Ws_Handler SHALL delete that connection's stored Connection_State and SHALL continue with the other connections.
 5. THE Ws_Handler SHALL send to at most 10 connections at the same time during one fan-out.
 
@@ -173,7 +173,7 @@ AI 司会者(Bedrock)、AI ボット、交換カード、協力お題、カス�
 2. THE Api_Stack SHALL set stage-level throttling on the WebSocket API (a rate limit and a burst limit, values chosen in the design).
 3. THE Ws_Handler SHALL have a timeout of at most 15 seconds and a memory size chosen in the design, and its log group SHALL have a retention of at most 14 days.
 4. THE Api_Stack SHALL NOT enable API Gateway access logging or execution logging (they need an account-wide CloudWatch Logs role setting that this Spec does not manage).
-5. THE Lambda concurrent-execution limit of the account is 10 in ap-southeast-2 (checked with `GetAccountSettings` while writing this Spec). THE design SHALL state how this limit affects the app and SHALL NOT set reserved concurrency (the account has no spare concurrency to reserve).
+5. THE Lambda concurrent-execution limit of the account is 1,000 in ap-southeast-2 (raised from 10; checked with `GetAccountSettings`). THE design SHALL state how this limit and the stage throttling affect the app, and the CDK app SHALL NOT set reserved concurrency.
 6. THE docs SHALL tell the project owner to set a spend limit in AWS Settings > Billing and to check it when the app stops responding with access-denied errors.
 7. THE docs SHALL state that the project owner is asked whether to delete or keep the resources after Contest_End. No resource SHALL be deleted automatically.
 

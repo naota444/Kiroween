@@ -2,16 +2,16 @@
 
 ## Overview
 
-local-prototype の `RoomService` を、API Gateway WebSocket + Lambda + DynamoDB の上で動かし、画面を S3 + CloudFront で配って、審査員が使える公開 URL を作る。新しく書くのは、`DynamoDbRoomStore`、Lambda ハンドラー、CDK の3スタック、スモークテスト、英語の文書である。`packages/core`(`RoomService`、`RoomStore`、メッセージ型)、`apps/web`、`apps/local-server`、`.github/workflows/cd.yml`、`GithubOidcStack` は変えない(例外は、タスク 2.2 の core の `./testing` export と、タスク 2.3 の契約テストのスイート。決定事項 4)。
+local-prototype の `RoomService` を、API Gateway WebSocket + Lambda + DynamoDB の上で動かし、画面を S3 + CloudFront で配って、審査員が使える公開 URL を作る。新しく書くのは、`DynamoDbRoomStore`、Lambda ハンドラー、CDK の3スタック、スモークテスト、英語の文書である。`packages/core`(`RoomService`、`RoomStore`、メッセージ型)、`apps/web`、`apps/local-server`、`.github/workflows/cd.yml`、`GithubOidcStack` は変えない(契約テストのスイート `runRoomStoreContract` は、S 側の `@doodle-nearby/core/testing` にすでにある。この Spec は使うだけで、作らず、core の `./testing` export や `coreAlias` も足さない。決定事項 4)。
 
 CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態を保つ。Windows では `npm` を `npm.cmd` で呼ぶ。
 
 ### 前提
 
 - **タスク 1(疎通の確認)は、ほかのタスクに依存しない最初のタスクである。** 通らなければ、決定事項 1 の代替案を所有者に相談するまで、タスク 5.3 と 7 に進まない。
-- タスク 3.3、4.3、4.4、7 は、local-prototype の次のタスクが `main` に入っていることが前提である: 4.3〜4.11(`RoomStore`、`MemoryRoomStore`、`RoomService`)、4.20、4.21(`MESSAGE_SPECS`、`orderRoomSummaries`)、グループ W(画面)。入っていなければ、そのタスクは保留にして、ほかのタスクを進める。
+- タスク 3.3、4.3、4.4、7 は、local-prototype の次のタスクが `main` に入っていることが前提である: 4.3〜4.11(`RoomStore`、`MemoryRoomStore`、(契約テストのスイート `runRoomStoreContract` は、4.4 として S 側にすでにある)、`RoomService`)、4.20、4.21(`MESSAGE_SPECS`、`orderRoomSummaries`)、グループ W(画面)。入っていなければ、そのタスクは保留にして、ほかのタスクを進める。
 - AWS のリソースを作る・消すタスク(1.2、1.3、3.6、7.1)と、`git push`、`DEPLOY_ENABLED` の変更(7.3)は、実行の前に所有者に確認する。操作は ap-southeast-2 だけで行う。
-- Lambda の同時実行の上限(現在 10)は、1,000 への引き上げを申請中である。承認の有無にかかわらず、受け付ける量の上限はステージのスロットリング(20 req/秒、バースト 40)が決める。
+- Lambda の同時実行の上限は 1,000 に引き上げ済みである。受け付ける量の上限は、ステージのスロットリング(20 req/秒、バースト 40)が決める。
 
 ### 決定事項の反映
 
@@ -60,7 +60,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `git status` に `infra/spike/` が残っていない。`npm.cmd run lint`、`npm.cmd run typecheck`
     - _Requirements: 2.5_
 
-- [ ] 2. 【基盤】依存、定数、契約テストの export
+- [ ] 2. 【基盤】依存、定数、S 側の契約テストを使う準備
   - [ ] 2.1 依存と定数を足す
     - 触るファイル: `infra/lib/constants.ts`、`infra/package.json`、`backend/lambdas/package.json`、`package-lock.json`
     - `constants.ts` に追記: `WS_STAGE_NAME = 'ws'`、`TTL_MARGIN_SECONDS = 3600`、`CONNECTION_TTL_SECONDS = 10800`、スタック名 `DATA_STACK_NAME`、`API_STACK_NAME`、`WEB_STACK_NAME`(`DoodleNearbyDataStack` など)
@@ -70,21 +70,21 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd install` のあと `npm.cmd ci`、`npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build`、`npm.cmd run synth -w infra`
     - _Requirements: 7.6, 9.8_
 
-  - [ ] 2.2 core の `./testing` export と `coreAlias` を足す
-    - 触るファイル: `packages/core/package.json`(`exports` に `"./testing"`)、`vitest.shared.ts`(`coreAlias` に `@doodle-nearby/core/testing` を **`@doodle-nearby/core` より先に**足す。文字列のエイリアスは前方一致のため)、`packages/core/src/testing/index.ts`(契約テストのスイートの入口。2.3 で中身を作る場合は、ここから export)
-    - `packages/core/src/index.ts` からは `testing` を export しない(`vitest` の import を本番のバンドルに入れないため)
-    - `RoomStore` interface と既存の export の意味は変えない。local-prototype の design 5.2 の記述に合わせる
-    - 完了の確認: `npm.cmd run typecheck`、`npm.cmd test`(既存のテストが通る)、`npm.cmd run lint`
-    - _Requirements: 4.1, 4.2, 10.6_
-
-  - [ ] 2.3 契約テストのスイート `runRoomStoreContract` を確認する(なければ作る)
-    - local-prototype のタスク 4.4(任意)で作られていれば、`./testing` から呼べることを確かめて終わる。`MemoryRoomStore` が引き続き通ること
-    - なければ、`packages/core/src/testing/room-store-contract.ts` に作る(`runRoomStoreContract(name, createStore)`)。ケースは local-prototype の design 5.2 の `RoomStore` の定義に従い、`createRoom`(`code_taken`、期限切れの番号の置き換え)、`addParticipant`(`full`、`identity_taken`、`added: false`、`not_found`)、`removeParticipant`、`appendDrawing`(`seq` の連番、`maxDrawings` を超えた古い絵の削除)、`listDrawings`(`seq` 昇順)、`listRoomsByGeohashes`、`listActiveRoomCodes`、`deleteExpired` を含める
-    - `deleteExpired` の扱い(決定事項 4): 「`deleteExpired` のあと `getRoomById` が `null`」を求めるなら、`DynamoDbRoomStore` はそれを満たす実装にする(読み取れる期限切れの部屋を消す)。求めないなら空の実装でもよい。**選んだ内容を design の決定事項 4 に書く(Spec の修正として別コミット)**
-    - `MemoryRoomStore` で `runRoomStoreContract` を実行するテストを `packages/core/src` に置く
-    - 完了の確認: `npm.cmd test`、`npm.cmd run typecheck`、`npm.cmd run lint`
+  - [ ] 2.2 S 側の契約テストのスイートの状態を確認する(作らない)
+    - S 側の `@doodle-nearby/core/testing` の `runRoomStoreContract(name, createStore, options?)` を、読んで確認するだけのタスク(コードは変えない)。**この Spec では契約テストを作らない。**
+    - 確認する点: ① `@doodle-nearby/core/testing` から `runRoomStoreContract` が export されている(`createStore` は `RoomStore | Promise<RoomStore>` を返すファクトリ)。`index.ts` からは export されていない ② `MemoryRoomStore` で通っている ③ **`deletesImmediately` のオプションが入っているか。** 入る予定で、まだなら、タスク 3.5、3.6 を保留にして、S 側に状況を確認する。`DynamoDbRoomStore` は `deletesImmediately: false` で呼ぶ ④ 期限切れの `roomCode` の置き換えで、古い部屋と絵が消えることを求めているか(求めるなら、`createRoom` の後始末を省略しない) ⑤ 契約に不足がある(例: `listDrawings` の全ページ、競合のケース)場合は、S 側に追加を依頼する。この Spec では、タスク 3.5 の追加ケースとして書く
+    - ③④の結果を、このタスクのコミットメッセージに書く。design の決定事項 4 と食い違う場合は、design を直す(Spec の修正として別コミット)
+    - 触るファイル: なし
+    - 完了の確認: `npm.cmd test`(`MemoryRoomStore` の契約テストが通る)
     - _Requirements: 4.2, 4.8, 10.6_
 
+  - [ ] 2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする
+    - 前提: タスク 2.2
+    - `backend/lambdas` のテストから `import { runRoomStoreContract } from '@doodle-nearby/core/testing'` が、型(`tsc -b`)と Vitest の両方で解決できることを確かめる。`./testing` の export、`coreAlias`、契約テストのファイルは**足さない・変えない**(S 側にある)
+    - 解決できない場合だけ、`backend/lambdas` 側の設定(`vitest.config.ts` が `coreAlias` を使っているか、`tsconfig.json` の `references`)を直す。`packages/core` の変更が必要だと分かったら、変更せずに S 側へ依頼する
+    - 触るファイル: 必要な場合だけ `backend/lambdas/vitest.config.ts`、`backend/lambdas/tsconfig.json`
+    - 完了の確認: `npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run lint`
+    - _Requirements: 4.1, 4.2, 10.6_
 - [ ] 3. 【保存】`DynamoDbRoomStore` と `ConnectionStore`
   - [ ] 3.1 キーと変換の純関数を作る
     - 触るファイル: `backend/lambdas/src/dynamo-keys.ts`(新規)
@@ -107,7 +107,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 触るファイル: `backend/lambdas/src/dynamodb-room-store.ts`(新規)
     - design の 1.3 の表のとおりに、`RoomStore` の全メソッドを実装する。要点: `createRoom` は予約項目の条件付き `Put` を含む `TransactWriteItems`(キャンセル理由で `code_taken` を決める。期限切れの予約は置き換え、古い部屋の絵は後で消す)。`addParticipant` は1回の条件付き `UpdateItem` で、失敗時は `ALL_OLD` を見て `not_found` / `added: false` / `full` / `identity_taken` を決める。`appendDrawing` は `nextSeq` の加算 → 絵の `Put` → 超過分の `DeleteItem`
     - 部屋・絵・予約の読み取りは `ConsistentRead`。**すべての `Query`(`listDrawings`、`listRoomsByGeohashes`)と `Scan`(`listActiveRoomCodes`)で `LastEvaluatedKey` をたどり、全ページを連結する。`Limit` で切らない**(50枚 × 約30KB は1回の上限 1MB を超える)
-    - `Scan` は `listActiveRoomCodes` だけで使う。`deleteExpired` は、タスク 2.3 で決めた内容で実装する
+    - `Scan` は `listActiveRoomCodes` だけで使う。`deleteExpired` は TTL に任せ、何も消さず `[]` を返す(読める期限切れの部屋を消すかどうかは任意で、入れない。決定事項 4)
     - コンストラクターで `DynamoDBDocumentClient` とテーブル名を受け取る(テストで差し替えられる)
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd run build`(実際の動作はタスク 3.5、3.6 で確認する)
     - _Requirements: 4.1〜4.10, 6.1, 6.2, 6.4_
@@ -122,7 +122,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
   - [ ] 3.5 `DynamoDbRoomStore` の統合テストを書く(必須②。opt-in)
     - 触るファイル: `backend/lambdas/src/dynamodb-room-store.integration.test.ts`(新規)、`backend/lambdas/vitest.config.ts`(統合テストは `RUN_AWS_INTEGRATION=1` のときだけ実行。それ以外は `describe.skip` にする)
     - `beforeAll` で一時テーブル `doodle-nearby-it-<ランダム>` を、本番と同じスキーマ(`pk`/`sk`、`gsi1`、TTL 属性、オンデマンド)で作成し、`ACTIVE` まで待つ。`afterAll` で必ず削除する(テストが失敗しても)。テーブル名の接頭辞を出力する
-    - `runRoomStoreContract`(`@doodle-nearby/core/testing`)を `DynamoDbRoomStore` で実行する
+    - `runRoomStoreContract`(`@doodle-nearby/core/testing`、S 側のもの)を `DynamoDbRoomStore` で、**`deletesImmediately: false`** を付けて実行する
     - **追加のケース**: 1つの部屋に、`imageData` が 30,000 文字の絵を 50 枚 `appendDrawing` し、`listDrawings` が 50 枚すべてを `seq` の昇順(1〜50)で返し、各 `imageData` が送った内容と一致すること(合計約 1.5MB で、1回の `Query` の上限を超える)。51枚目を追加すると `seq` 1 の絵が消えて 50 枚のままであること
     - 競合のケース: 最後の1席に `addParticipant` を同時に2回(`full`)、同じ識別で同時に2回(`identity_taken`)、同じ `roomCode` で `createRoom` を同時に2回(`code_taken`)。それぞれ成功がちょうど1回であること
     - `npm.cmd test`(`RUN_AWS_INTEGRATION` なし)では、このテストがスキップされること
@@ -137,15 +137,15 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
 - [ ] 4. 【ハンドラー】Lambda の薄い層
   - [ ] 4.1 `ports.ts` を作る
     - 触るファイル: `backend/lambdas/src/ports.ts`(新規)
-    - `createPorts({ endpoint, sender, connections, buildRoomList, pending })`: `send`(`JSON.stringify` して `postToConnection`。410 とその他の失敗はその接続だけ無視。410 のときは接続状態を削除。`MAX_MESSAGE_BYTES` 超は送らずログだけ)、`roomsChanged(geohash)`(`neighborCells` の各マスの購読者を `listSubscribers` で引き、購読者の `geohash` ごとに `buildRoomList` を1回だけ呼び、最大10接続ずつ並行で送る)
-    - 返した `Promise` を `pending` にも積む(`RoomService` が `await` しない場合でも、ハンドラーが完了を待てるように)
+    - `createPorts({ endpoint, sender, connections, buildRoomList, pending })` は `{ ports, flusher }` を返す。`send`(`JSON.stringify` して `postToConnection`。410 とその他の失敗はその接続だけ無視。410 のときは接続状態を削除。`MAX_MESSAGE_BYTES` 超は送らずログだけ)。`roomsChanged(geohash)` は geohash を `flusher.changed` に記録するだけ(I/O をしない)。`flusher.flush()` が、記録した geohash の近傍の購読者を `listSubscribers` で引き(`connectionId` で重複なし)、購読者の `geohash` ごとに `buildRoomList` を1回だけ呼び、最大10接続ずつ並行で送る。送ったら `changed` を空にする
+    - `send` が返した `Promise` を `pending` にも積む(`RoomService` が `await` しない場合でも、ハンドラーが完了を待てるように)
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`
     - _Requirements: 3.7, 3.9, 5.3, 5.4, 5.5_
 
   - [ ] 4.2 `handler.ts` を作る
     - 触るファイル: `backend/lambdas/src/handler.ts`(新規)
     - `createWsHandler(deps)`: `$connect`(空の接続状態を保存)、`$disconnect`(状態があれば `handleDisconnect`、状態を削除)、`$default`(バイナリ → `invalid_json`、`Buffer.byteLength` が `MAX_MESSAGE_BYTES` 超 → `message_too_large`、`parseClientMessage` の失敗 → そのコード、成功 → 状態を読む(なければ空)→ `handleMessage` → 新しい状態を保存)。サイズはパースの前に測る。ちょうど `MAX_MESSAGE_BYTES` は受け付ける
-    - 全体を `try/catch` で囲み、本人へ `internal_error` を送る(送れなければ無視)。常に `statusCode: 200`。`return` の前に `pending` を `allSettled` で待つ
+    - 全体を `try/catch` で囲み、本人へ `internal_error` を送る(送れなければ無視)。常に `statusCode: 200`。**順序: 接続状態の読み取り → `handleMessage` → 新しい状態の保存 → `flusher.flush()` → `pending` を `allSettled` で待つ → `return`。** `$disconnect` は、`handleDisconnect` → 状態の削除 → `flush()` → `pending` を待つ。`handleMessage` が例外を投げても、保存できる状態を保存してから `flush()` する
     - 管理 API の宛先はイベントの `domainName` と `stage` から作る(環境変数を使わない)
     - ログは `type`、バイト数、エラーコード、接続 ID の先頭8文字だけ。geohash、部屋番号、`imageData`、IP を出さない。イベントの送信元 IP を読まない
     - イベントごとに `RoomService` を作る(`createPorts` の宛先と `pending` が変わるため)
@@ -164,7 +164,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 触るファイル: `backend/lambdas/src/handler.test.ts`(新規)
     - 偽の `ConnectionStore`(メモリ)、偽の送信(送ったメッセージを記録)、`MemoryRoomStore` + 実物の `RoomService` を使う
     - 確認する点: 位置なしの部屋の作成 → 部屋番号での参加 → 絵の送信で、両方に `drawing_added` が届く。`MAX_MESSAGE_BYTES` ちょうどは受け付け、1バイト超は `message_too_large` で `RoomService` を呼ばない。バイナリは `invalid_json`。不正な JSON は parser のコード。`$disconnect` で `participant_left` が他の参加者に届き、状態が消える。410 の接続は状態が消え、ほかの接続への送信は続く。一斉送信が10接続ずつ
-    - **Property 3: 一覧の宛先**(接続の集合と変更された geohash から、`roomsChanged` の送信先が「部屋に入っておらず、`geohash` が近傍に含まれる接続」と等しい。位置なしと部屋の中の接続には送らない)
+    - **Property 3: 一覧の宛先**(接続の集合と変更された geohash から、`flush` の送信先が「部屋に入っておらず、`geohash` が近傍に含まれる接続」と等しい。位置なしと部屋の中の接続には送らない)。あわせて例示テスト: 部屋を作った・入った本人には、そのあとの `room_list` が届かない(状態の保存が先)。`roomsChanged` の呼び出し中は何も送られず、`flush` で初めて送られる
     - **Validates: Requirements 3.3〜3.9, 5.3〜5.5, 10.1**
     - 完了の確認: `npm.cmd test`、`npm.cmd run lint`、`npm.cmd run typecheck`
 
@@ -250,7 +250,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
 
   - [ ] 7.2 公開 URL でスモークテストを実行し、上限を確認する(必須⑥)
     - `npm run smoke -- <PublicUrl>` が成功する。実機(スマホ2台、または PC とスマホ)で、部屋の作成、部屋番号での参加、絵の送信を確かめる
-    - Lambda の同時実行の上限の申請状況を `GetAccountSettings` で確認し、結果(承認済みか、10 のままか)を所有者に報告する。ステージのスロットリング(20 / 40)が設定されていることを `aws apigatewayv2 get-stage` で確認する
+    - Lambda の同時実行の上限の申請状況を `GetAccountSettings` で確認し、結果(1,000 のままであること)を所有者に報告する。ステージのスロットリング(20 / 40)が設定されていることを `aws apigatewayv2 get-stage` で確認する
     - 失敗したら、Lambda のログ(`/aws/lambda/…`)を見る。ログに geohash、部屋番号、`imageData` が出ていないことも確認する
     - _Requirements: 10.4, 3.10, 8.2, 8.5_
 
