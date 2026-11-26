@@ -483,12 +483,12 @@ Thumbs.db
 `.github/CODEOWNERS`:
 
 ```
-/packages/core/   @naota444 @takakisae @JTakahashi03
-/.kiro/steering/  @naota444 @takakisae @JTakahashi03
+/packages/core/   @naota444 @takakisae @Takatyan03
+/.kiro/steering/  @naota444 @takakisae @Takatyan03
 ```
 
 - 1人の承認でよい設定（要件 7.6）は、ファイルでは表せない。`main` の ruleset で「Require a pull request（承認数 1）」「Require review from Code Owners」「必須チェック `ci-ok`」を設定する。手順は `docs/` に書く。
-- 3人のユーザー名（`@naota444`、`@takakisae`、`@JTakahashi03`）は確定済み。いずれも対象リポジトリへの書き込み権限が必要で、権限がないと CODEOWNERS エラーになり、そのオーナーは無視される（要件 7.7）。招待と権限付与は手動で行う。
+- 3人のユーザー名（`@naota444`、`@takakisae`、`@Takatyan03`）は確定済み。いずれも対象リポジトリへの書き込み権限が必要で、権限がないと CODEOWNERS エラーになり、そのオーナーは無視される（要件 7.7）。招待と権限付与は手動で行う。
 
 ## Components and Interfaces
 
