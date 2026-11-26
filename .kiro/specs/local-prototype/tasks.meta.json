@@ -96,6 +96,217 @@
         "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
         "timestamp": 1795654890168
       }
+    ],
+    "4.1 部屋の型、定数、時計、参加者の識別を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657143942
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657217279
+      }
+    ],
+    "4.14 ポート設定と起動ガード(Windows 対応)を直す": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657144053
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657217429
+      }
+    ],
+    "4.16 サーバーの小さな部品を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657144125
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657217722
+      }
+    ],
+    "4.3 `RoomStore` interface と `MemoryRoomStore` を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657225646
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657311355
+      }
+    ],
+    "4.5 `RoomService`(作成・参加・退出・切断)を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657311984
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657441344
+      }
+    ],
+    "4.6 部屋の作成と定員のテストを書く(必須③)": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657441635
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657624453
+      }
+    ],
+    "4.7 `RoomService` の一覧と再送先の判定を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657441867
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657625032
+      }
+    ],
+    "4.17 `createLocalServer`(接続の処理)を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657442080
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657625299
+      }
+    ],
+    "4.8 `RoomService` の絵の配布を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657625488
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657690009
+      }
+    ],
+    "4.9 絵の配布先のテストを書く(必須④)": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657690307
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657754732
+      }
+    ],
+    "4.10 期限切れの掃除を作る": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657690521
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657755100
+      }
+    ],
+    "4.11 期限切れのテストを書く(必須⑤)": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657758367
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658082455
+      }
+    ],
+    "4.18 一覧の再送と掃除のタイマーをつなぎ、`main` から起動する": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657759089
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658083238
+      }
+    ],
+    "4.22 `apps/local-server/README.md`(英語)を書く": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795657759812
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658083674
+      }
+    ],
+    "4.20 `MESSAGE_SPECS` に新メッセージ8種類を追加する(Spec 0 のタスク 5.1 が前提)": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658091081
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658264332
+      }
+    ],
+    "4.21 並べ替えを `orderRoomSummaries` に差し替える(Spec 0 のタスク 4.1 が前提)": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658091885
+      },
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658265139
+      }
+    ],
+    "4. 【グループ S: サーバー】`packages/core` の部屋ロジックと `apps/local-server`": [
+      {
+        "executionId": "0f944642-fac1-4140-9aa6-3205cbf54c90",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658265342
+      }
+    ],
+    "4.4 `RoomStore` の契約テストのスイートを書く": [
+      {
+        "executionId": "bd1286c0-2209-40e0-8a13-8f2d5438ab41",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658649406
+      },
+      {
+        "executionId": "bd1286c0-2209-40e0-8a13-8f2d5438ab41",
+        "chatSessionId": "sess_d50d5641-9090-441e-b071-e1d7c9eddf45",
+        "timestamp": 1795658834227
+      }
     ]
   }
 }
