@@ -6,13 +6,7 @@ import { PALETTE, PEN_COLOR_CSS } from '../palette.js';
 import { exportDrawing } from './export-drawing.js';
 import type { PixelBuffer } from './types.js';
 
-function solidBuffer(
-  width: number,
-  height: number,
-  r: number,
-  g: number,
-  b: number,
-): PixelBuffer {
+function solidBuffer(width: number, height: number, r: number, g: number, b: number): PixelBuffer {
   const data = new Uint8ClampedArray(width * height * 4);
   for (let i = 0; i < width * height; i++) {
     data[i * 4] = r;

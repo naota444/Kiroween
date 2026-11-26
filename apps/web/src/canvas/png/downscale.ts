@@ -30,7 +30,11 @@ export function downscale(
       const srcX0 = tx * scaleX;
       const srcX1 = srcX0 + scaleX;
 
-      let r = 0, g = 0, b = 0, a = 0, weight = 0;
+      let r = 0,
+        g = 0,
+        b = 0,
+        a = 0,
+        weight = 0;
 
       // Iterate over all source pixels (and fractions) that contribute
       const iyStart = Math.floor(srcY0);

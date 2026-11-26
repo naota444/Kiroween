@@ -46,7 +46,9 @@ describe('openConnection', () => {
 
     const msg: ServerMessage = {
       type: 'room_list',
-      rooms: [{ roomId: 'r1', roomCode: '1234', geohash: 'xn76ur', participantCount: 2, sameHash: true }],
+      rooms: [
+        { roomId: 'r1', roomCode: '1234', geohash: 'xn76ur', participantCount: 2, sameHash: true },
+      ],
     };
     lastFakeWs.trigger('message', { data: JSON.stringify(msg) });
 
