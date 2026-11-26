@@ -133,9 +133,9 @@ describe('parser (examples)', () => {
   });
 });
 
-// Feature: local-prototype, Property 1: 譁ｰ繝｡繝・そ繝ｼ繧ｸ縺ｮ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・
+// Feature: local-prototype, Property 1: 新メッセージのラウンドトリップ
 // **Validates: Requirements 11.3, 11.7, 13.4**
-describe('Property 1: 譁ｰ繝｡繝・そ繝ｼ繧ｸ縺ｮ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・', () => {
+describe('Property 1: 新メッセージのラウンドトリップ', () => {
   const NUM_RUNS = 100;
 
   const geohash = fc
@@ -212,20 +212,17 @@ describe('Property 1: 譁ｰ繝｡繝・そ繝ｼ繧ｸ縺ｮ繝ｩ繧ｦ繝ｳ�
     ],
   ];
 
-  it.each(clientCases)(
-    '%s: 繧ｯ繝ｩ繧､繧｢繝ｳ繝亥髄縺代↓繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・縺吶ｋ',
-    (_name, arb) => {
-      fc.assert(
-        fc.property(arb, (msg) => {
-          const r = parseClientMessage(JSON.stringify(msg));
-          expect(r).toEqual({ ok: true, value: msg });
-        }),
-        { numRuns: NUM_RUNS },
-      );
-    },
-  );
+  it.each(clientCases)('%s: クライアント向けにラウンドトリップする', (_name, arb) => {
+    fc.assert(
+      fc.property(arb, (msg) => {
+        const r = parseClientMessage(JSON.stringify(msg));
+        expect(r).toEqual({ ok: true, value: msg });
+      }),
+      { numRuns: NUM_RUNS },
+    );
+  });
 
-  it.each(serverCases)('%s: 繧ｵ繝ｼ繝舌・蜷代￠縺ｫ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・縺吶ｋ', (_name, arb) => {
+  it.each(serverCases)('%s: サーバー向けにラウンドトリップする', (_name, arb) => {
     fc.assert(
       fc.property(arb, (msg) => {
         const r = parseServerMessage(JSON.stringify(msg));

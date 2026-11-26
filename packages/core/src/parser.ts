@@ -384,7 +384,9 @@ function parseDrawingAdded(o: Obj): ParseResult<ServerMessage> {
   return fail('invalid_field', 'exactly one of imageData or imageKey must be non-null');
 }
 
-// ---- 共通の入口 ----/** JSON を読み、オブジェクトであることと type の所属を確認する。throw しない。 */
+// ---- 共通の入口 ----
+
+/** JSON を読み、オブジェクトであることと type の所属を確認する。throw しない。 */
 function readEnvelope(raw: string, types: readonly string[]): Check<{ obj: Obj; type: string }> {
   let data: unknown;
   try {
