@@ -84,14 +84,14 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd test`(`parser.test.ts` の既存テストと追記分)、`npm.cmd run typecheck`、`npm.cmd run lint`
     - _Requirements: 11.3, 11.4, 11.5, 11.6, 14.2_
 
-  - [ ] 1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)
+  - [x] 1.4 新メッセージのラウンドトリップのプロパティテストを書く(必須①)
     - 触るファイル: `packages/core/src/parser.test.ts`(追記)
     - 新メッセージ8種類のジェネレーターを作り、JSON に直列化してから対応するパーサーで読むと、`ok: true` で、元のメッセージと深く等しいことを確かめる。1種類につき100ケース以上(`numRuns: 100` 以上)
     - **Property 1: 新メッセージのラウンドトリップ**
     - **Validates: Requirements 11.3, 11.7, 13.4**
     - 完了の確認: `npm.cmd test`、`npm.cmd run lint`、`npm.cmd run typecheck`
 
-  - [ ] 1.5 `encodeGeohash` と `neighborCells` を作る
+  - [-] 1.5 `encodeGeohash` と `neighborCells` を作る
     - 触るファイル: `packages/core/src/geohash.ts`(新規)、`packages/core/src/geohash.test.ts`(新規。スモークテスト)、`packages/core/src/index.ts`(`geohash.js` を再エクスポート)
     - `InvalidCoordinateError`、`InvalidGeohashError`、`encodeGeohash(latitude, longitude)`(有限数と範囲を検査してから `ngeohash.encode`)、`neighborCells(geohash)`(`isGeohash` で検査し、`[geohash, ...ngeohash.neighbors(geohash)]` から重複を除く。自分が先頭)を作る
     - `ngeohash` は既定 import(`import ngeohash from 'ngeohash'`)で使う

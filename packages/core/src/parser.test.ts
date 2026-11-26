@@ -1,4 +1,13 @@
+import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
+import {
+  GEOHASH_ALPHABET,
+  MAX_PARTICIPANTS,
+  PARTICIPANT_COLORS,
+  PARTICIPANT_ICONS,
+  type ClientMessage,
+  type ServerMessage,
+} from './messages.js';
 import { parseClientMessage, parseServerMessage } from './parser.js';
 
 describe('parser (examples)', () => {
@@ -121,5 +130,108 @@ describe('parser (examples)', () => {
       expect(a.ok === false && a.error.code).toBe('unknown_type');
       expect(b.ok === false && b.error.code).toBe('unknown_type');
     });
+  });
+});
+
+// Feature: local-prototype, Property 1: 譁ｰ繝｡繝・そ繝ｼ繧ｸ縺ｮ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・
+// **Validates: Requirements 11.3, 11.7, 13.4**
+describe('Property 1: 譁ｰ繝｡繝・そ繝ｼ繧ｸ縺ｮ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・', () => {
+  const NUM_RUNS = 100;
+
+  const geohash = fc
+    .array(fc.constantFrom(...GEOHASH_ALPHABET.split('')), { minLength: 6, maxLength: 6 })
+    .map((cs) => cs.join(''));
+  const roomCode = fc.integer({ min: 0, max: 9999 }).map((n) => String(n).padStart(4, '0'));
+  const identity = fc.record({
+    color: fc.constantFrom(...PARTICIPANT_COLORS),
+    icon: fc.constantFrom(...PARTICIPANT_ICONS),
+  });
+  const id = fc.string({ minLength: 1, maxLength: 20 });
+  const image = fc.oneof(
+    fc.record({ imageData: fc.string({ maxLength: 200 }), imageKey: fc.constant(null) }),
+    fc.record({ imageData: fc.constant(null), imageKey: fc.string({ maxLength: 50 }) }),
+  );
+
+  const clientCases: [string, fc.Arbitrary<ClientMessage>][] = [
+    [
+      'create_room',
+      fc.record({
+        type: fc.constant('create_room' as const),
+        geohash: fc.oneof(geohash, fc.constant(null)),
+      }),
+    ],
+    ['join_by_code', fc.record({ type: fc.constant('join_by_code' as const), roomCode })],
+  ];
+
+  const serverCases: [string, fc.Arbitrary<ServerMessage>][] = [
+    [
+      'room_created',
+      fc.record({ type: fc.constant('room_created' as const), roomId: id, roomCode }),
+    ],
+    [
+      'room_joined',
+      fc.record({
+        type: fc.constant('room_joined' as const),
+        roomId: id,
+        roomCode,
+        you: identity,
+        participants: fc.array(identity, { minLength: 1, maxLength: MAX_PARTICIPANTS }),
+      }),
+    ],
+    ['room_left', fc.record({ type: fc.constant('room_left' as const), roomId: id })],
+    [
+      'participant_joined',
+      fc.record({
+        type: fc.constant('participant_joined' as const),
+        roomId: id,
+        participant: identity,
+      }),
+    ],
+    [
+      'participant_left',
+      fc.record({
+        type: fc.constant('participant_left' as const),
+        roomId: id,
+        participant: identity,
+      }),
+    ],
+    [
+      'drawing_added',
+      fc
+        .tuple(
+          fc.record({
+            type: fc.constant('drawing_added' as const),
+            roomId: id,
+            drawingId: id,
+            seq: fc.integer({ min: 1, max: 1_000_000 }),
+            sender: identity,
+          }),
+          image,
+        )
+        .map(([base, img]) => ({ ...base, ...img }) as ServerMessage),
+    ],
+  ];
+
+  it.each(clientCases)(
+    '%s: 繧ｯ繝ｩ繧､繧｢繝ｳ繝亥髄縺代↓繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・縺吶ｋ',
+    (_name, arb) => {
+      fc.assert(
+        fc.property(arb, (msg) => {
+          const r = parseClientMessage(JSON.stringify(msg));
+          expect(r).toEqual({ ok: true, value: msg });
+        }),
+        { numRuns: NUM_RUNS },
+      );
+    },
+  );
+
+  it.each(serverCases)('%s: 繧ｵ繝ｼ繝舌・蜷代￠縺ｫ繝ｩ繧ｦ繝ｳ繝峨ヨ繝ｪ繝・・縺吶ｋ', (_name, arb) => {
+    fc.assert(
+      fc.property(arb, (msg) => {
+        const r = parseServerMessage(JSON.stringify(msg));
+        expect(r).toEqual({ ok: true, value: msg });
+      }),
+      { numRuns: NUM_RUNS },
+    );
   });
 });
