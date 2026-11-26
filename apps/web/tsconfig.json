@@ -9,5 +9,6 @@
     "outDir": "node_modules/.tsc-out",
     "emitDeclarationOnly": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "references": [{ "path": "../../packages/core" }]
 }
