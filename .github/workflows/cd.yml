@@ -1,0 +1,81 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: cd
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - id: cache
+        uses: actions/cache@v6
+        with:
+          path: |
+            node_modules
+            */*/node_modules
+          key: node-modules-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      - id: auth
+        name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-duration-seconds: 3600
+      - id: cdk_deploy
+        name: Deploy CDK stacks
+        working-directory: infra
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          npx cdk deploy 'DoodleNearby*' --require-approval never 2>&1 | tee "$RUNNER_TEMP/logs/cdk_deploy.log"
+      - id: outputs
+        name: Read stack outputs
+        run: |
+          mkdir -p "$RUNNER_TEMP/logs"
+          {
+            bucket=$(aws cloudformation describe-stacks --stack-name DoodleNearbyWebStack \
+              --query "Stacks[0].Outputs[?OutputKey=='WebBucketName'].OutputValue | [0]" --output text)
+            dist=$(aws cloudformation describe-stacks --stack-name DoodleNearbyWebStack \
+              --query "Stacks[0].Outputs[?OutputKey=='WebDistributionId'].OutputValue | [0]" --output text)
+            if [ -z "$bucket" ] || [ "$bucket" = "None" ] || [ -z "$dist" ] || [ "$dist" = "None" ]; then
+              echo "WebBucketName or WebDistributionId output not found in DoodleNearbyWebStack"
+              exit 1
+            fi
+            echo "BUCKET=$bucket" >> "$GITHUB_ENV"
+            echo "DIST_ID=$dist" >> "$GITHUB_ENV"
+            echo "bucket=$bucket distribution=$dist"
+          } 2>&1 | tee "$RUNNER_TEMP/logs/outputs.log"
+      - id: web_build
+        name: Build web app
+        run: (npx tsc -b packages/core && npm run build -w apps/web) 2>&1 | tee "$RUNNER_TEMP/logs/web_build.log"
+      - id: s3_sync
+        name: Sync web app to S3
+        run: aws s3 sync apps/web/dist "s3://$BUCKET" --delete 2>&1 | tee "$RUNNER_TEMP/logs/s3_sync.log"
+      - id: invalidate
+        name: Invalidate CloudFront cache
+        run: aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths '/*' 2>&1 | tee "$RUNNER_TEMP/logs/invalidate.log"
+      - name: Write failure summary
+        if: failure()
+        env:
+          STEPS_JSON: ${{ toJSON(steps) }}
+        run: bash .github/scripts/job-summary.sh

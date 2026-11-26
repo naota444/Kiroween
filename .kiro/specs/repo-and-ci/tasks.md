@@ -142,7 +142,7 @@
     - AWS 認証ステップは置かない
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8_
 
-  - [ ] 8.2 CD ワークフローと失敗サマリーのスクリプトを作る
+  - [x] 8.2 CD ワークフローと失敗サマリーのスクリプトを作る
     - `.github/workflows/cd.yml`: `push` の `branches: [main]`、`permissions: id-token: write` と `contents: read`、`defaults.run.shell: bash`、`concurrency: group: cd`（`cancel-in-progress: false`）
     - `deploy` ジョブに `if: vars.DEPLOY_ENABLED == 'true'`、`timeout-minutes: 30`、`environment:` は指定しない。長期キーの secrets は参照しない
     - ステップ順: checkout、setup-node、cache、`npm ci`、`configure-aws-credentials`（`vars.AWS_ROLE_ARN`、`vars.AWS_REGION`）、`cdk deploy 'DoodleNearby*' --require-approval never`（`tee` でログを `$RUNNER_TEMP/logs` に保存）、スタック出力から `WebBucketName` と `WebDistributionId` を取得、`apps/web` のビルド、`aws s3 sync --delete`、`cloudfront create-invalidation`
