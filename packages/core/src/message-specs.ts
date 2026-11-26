@@ -27,6 +27,18 @@ const SPEC_BY_WIRE_TYPE = {
     direction: 'Client→Server',
     fields: ['type', 'roomId', 'imageData', 'imageKey'],
   },
+  create_room: {
+    typeName: 'CreateRoom',
+    wireType: 'create_room',
+    direction: 'Client→Server',
+    fields: ['type', 'geohash'],
+  },
+  join_by_code: {
+    typeName: 'JoinByCode',
+    wireType: 'join_by_code',
+    direction: 'Client→Server',
+    fields: ['type', 'roomCode'],
+  },
   room_list: {
     typeName: 'RoomList',
     wireType: 'room_list',
@@ -56,6 +68,42 @@ const SPEC_BY_WIRE_TYPE = {
     wireType: 'error',
     direction: 'Server→Client',
     fields: ['type', 'code', 'message'],
+  },
+  room_created: {
+    typeName: 'RoomCreated',
+    wireType: 'room_created',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId', 'roomCode'],
+  },
+  room_joined: {
+    typeName: 'RoomJoined',
+    wireType: 'room_joined',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId', 'roomCode', 'you', 'participants'],
+  },
+  room_left: {
+    typeName: 'RoomLeft',
+    wireType: 'room_left',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId'],
+  },
+  participant_joined: {
+    typeName: 'ParticipantJoined',
+    wireType: 'participant_joined',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId', 'participant'],
+  },
+  participant_left: {
+    typeName: 'ParticipantLeft',
+    wireType: 'participant_left',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId', 'participant'],
+  },
+  drawing_added: {
+    typeName: 'DrawingAdded',
+    wireType: 'drawing_added',
+    direction: 'Server→Client',
+    fields: ['type', 'roomId', 'drawingId', 'seq', 'sender', 'imageData', 'imageKey'],
   },
 } satisfies Record<ClientMessage['type'] | ServerMessage['type'], MessageSpec>;
 

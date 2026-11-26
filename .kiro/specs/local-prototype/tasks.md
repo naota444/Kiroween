@@ -66,7 +66,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd install` の後、`npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build` が通る。`npm.cmd ci` が成功する(ロックファイルが `package.json` と合っている)
     - _Requirements: 12.9, 8.1, 8.3_
 
-  - [ ] 1.2 メッセージ型と定数を `messages.ts` に追加する
+  - [x] 1.2 メッセージ型と定数を `messages.ts` に追加する
     - 触るファイル: `packages/core/src/messages.ts`(`packages/core/src/index.ts` は `export *` 済みなので触らない)
     - 追加する定数: `MAX_PARTICIPANTS`(8)、`MAX_DRAWINGS_PER_ROOM`(50)、`MAX_IMAGE_SIDE_PX`(512)、`MAX_IMAGE_DATA_CHARS`(30,000)、`PARTICIPANT_COLORS`(8色)、`PARTICIPANT_ICONS`(12種類)
     - 追加する型: `ParticipantColor`、`ParticipantIcon`、`ParticipantIdentity`、`CreateRoom`、`JoinByCode`、`RoomCreated`、`RoomJoined`、`RoomLeft`、`ParticipantJoined`、`ParticipantLeft`、`DrawingAdded`。`ClientMessage` と `ServerMessage` の共用体にメンバーを足す

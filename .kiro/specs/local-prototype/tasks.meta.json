@@ -12,6 +12,18 @@
         "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
         "timestamp": 1795653180986
       }
+    ],
+    "1.2 メッセージ型と定数を `messages.ts` に追加する": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795653185065
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654039729
+      }
     ]
   }
 }
