@@ -4,7 +4,9 @@ import type { NewDrawing } from './room-store.js';
 import type { Participant, Room } from './room-types.js';
 import { runRoomStoreContract } from './testing/room-store-contract.js';
 
-runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore());
+runRoomStoreContract('MemoryRoomStore', () => new MemoryRoomStore(), {
+  deletesImmediately: true,
+});
 
 const room = (over: Partial<Room> = {}): Room => ({
   roomId: 'r1',
