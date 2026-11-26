@@ -75,7 +75,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`、`npm.cmd test`(既存テストが通る)
     - _Requirements: 11.1, 11.2, 11.9, 11.11, 6.5, 6.10, 9.5_
 
-  - [ ] 1.3 新メッセージのパーサーを `parser.ts` に追加する
+  - [x] 1.3 新メッセージのパーサーを `parser.ts` に追加する
     - 触るファイル: `packages/core/src/parser.ts`、`packages/core/src/parser.test.ts`(スモークテストを数件追記)
     - `CLIENT_TYPES` に `create_room`、`join_by_code`、`SERVER_TYPES` に6種類を追加する。`parseClientMessage`、`parseServerMessage` の `switch` は、`default` に頼らず、明示的な `case` に直す(新メッセージが既存のパーサーに誤って入らないようにする)
     - 新メッセージごとの検査関数と `checkIdentity`(`color`、`icon` が定数に含まれること)を足す。必須フィールドなしは `missing_field`、型・範囲・形式の誤りは `invalid_field`。`drawing_added` は `imageData` と `imageKey` の「どちらか一方だけ非 null」を検査する

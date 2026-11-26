@@ -56,4 +56,70 @@ describe('parser (examples)', () => {
     expect(ok.ok).toBe(true);
     expect(ng.ok === false && ng.error.code).toBe('invalid_field');
   });
+
+  describe('新メッセージ', () => {
+    const you = { color: 'red', icon: 'cat' };
+    const clientCases = [
+      { type: 'create_room', geohash: 'xn774c' },
+      { type: 'create_room', geohash: null },
+      { type: 'join_by_code', roomCode: '0427' },
+    ];
+    const serverCases = [
+      { type: 'room_created', roomId: 'r1', roomCode: '0427' },
+      { type: 'room_joined', roomId: 'r1', roomCode: '0427', you, participants: [you] },
+      { type: 'room_left', roomId: 'r1' },
+      { type: 'participant_joined', roomId: 'r1', participant: you },
+      { type: 'participant_left', roomId: 'r1', participant: you },
+      {
+        type: 'drawing_added',
+        roomId: 'r1',
+        drawingId: 'd1',
+        seq: 1,
+        sender: you,
+        imageData: 'AAAA',
+        imageKey: null,
+      },
+    ];
+
+    it.each(clientCases)('クライアントの新メッセージを受理する: %j', (msg) => {
+      expect(parseClientMessage(JSON.stringify({ ...msg, lat: 35.1, lng: 139.2 }))).toEqual({
+        ok: true,
+        value: msg,
+      });
+    });
+
+    it.each(serverCases)('サーバーの新メッセージを受理する: %j', (msg) => {
+      expect(parseServerMessage(JSON.stringify({ ...msg, extra: 1 }))).toEqual({
+        ok: true,
+        value: msg,
+      });
+    });
+
+    it('必須フィールドなしは missing_field', () => {
+      const a = parseClientMessage(JSON.stringify({ type: 'create_room' }));
+      const b = parseServerMessage(JSON.stringify({ type: 'room_left' }));
+      expect(a.ok === false && a.error.code).toBe('missing_field');
+      expect(b.ok === false && b.error.code).toBe('missing_field');
+    });
+
+    it('不正な値は invalid_field', () => {
+      const a = parseServerMessage(
+        JSON.stringify({
+          type: 'participant_left',
+          roomId: 'r1',
+          participant: { color: 'x', icon: 'cat' },
+        }),
+      );
+      const b = parseServerMessage(JSON.stringify({ ...serverCases[5], imageKey: 'k' }));
+      expect(a.ok === false && a.error.code).toBe('invalid_field');
+      expect(b.ok === false && b.error.code).toBe('invalid_field');
+    });
+
+    it('反対方向の新メッセージは unknown_type', () => {
+      const a = parseClientMessage(JSON.stringify(serverCases[0]));
+      const b = parseServerMessage(JSON.stringify(clientCases[2]));
+      expect(a.ok === false && a.error.code).toBe('unknown_type');
+      expect(b.ok === false && b.error.code).toBe('unknown_type');
+    });
+  });
 });

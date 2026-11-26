@@ -4,9 +4,13 @@ import {
   MAX_AI_TEXT_LENGTH,
   MAX_ERROR_MESSAGE_LENGTH,
   MAX_MESSAGE_BYTES,
+  MAX_PARTICIPANTS,
   MAX_ROOMS,
+  PARTICIPANT_COLORS,
+  PARTICIPANT_ICONS,
   type ClientMessage,
   type ErrorCode,
+  type ParticipantIdentity,
   type ServerMessage,
 } from './messages.js';
 
@@ -28,8 +32,20 @@ const ERROR_CODES: readonly ErrorCode[] = [
   'internal_error',
 ];
 
-const CLIENT_TYPES = ['join', 'leave', 'drawing_submit'] as const;
-const SERVER_TYPES = ['room_list', 'ai_comment', 'ai_prompt', 'ai_card', 'error'] as const;
+const CLIENT_TYPES = ['join', 'leave', 'drawing_submit', 'create_room', 'join_by_code'] as const;
+const SERVER_TYPES = [
+  'room_list',
+  'ai_comment',
+  'ai_prompt',
+  'ai_card',
+  'error',
+  'room_created',
+  'room_joined',
+  'room_left',
+  'participant_joined',
+  'participant_left',
+  'drawing_added',
+] as const;
 
 // ---- 小さな検査関数 ----
 export function codePointLength(text: string): number {
@@ -229,8 +245,146 @@ function parseErrorMessage(o: Obj): ParseResult<ServerMessage> {
   return { ok: true, value: { type: 'error', code: code as ErrorCode, message: message.value } };
 }
 
-// ---- 共通の入口 ----
-/** JSON を読み、オブジェクトであることと type の所属を確認する。throw しない。 */
+// ---- 新しいクライアントメッセージ ----
+function parseCreateRoom(o: Obj): ParseResult<ClientMessage> {
+  const missing = requireFields(o, ['geohash']);
+  if (missing) return missing;
+  const geohash = o.geohash;
+  if (geohash !== null && !isGeohash(geohash)) {
+    return fail('invalid_field', `geohash must be ${GEOHASH_LENGTH} geohash characters or null`);
+  }
+  return { ok: true, value: { type: 'create_room', geohash } };
+}
+
+function parseJoinByCode(o: Obj): ParseResult<ClientMessage> {
+  const missing = requireFields(o, ['roomCode']);
+  if (missing) return missing;
+  if (!isRoomCode(o.roomCode)) return fail('invalid_field', 'roomCode must be 4 digits');
+  return { ok: true, value: { type: 'join_by_code', roomCode: o.roomCode } };
+}
+
+// ---- 新しいサーバーメッセージ ----
+/** color と icon が定数に含まれる ParticipantIdentity を検査する。余分なフィールドは捨てる。 */
+function checkIdentity(obj: Obj, key: string): Check<ParticipantIdentity> {
+  const v = obj[key];
+  if (!isObject(v)) return fail('invalid_field', `${key} must be an object`);
+  const missing = requireFields(v, ['color', 'icon']);
+  if (missing) return missing;
+  const { color, icon } = v;
+  if (typeof color !== 'string' || !(PARTICIPANT_COLORS as readonly string[]).includes(color)) {
+    return fail('invalid_field', `${key}.color must be a known color`);
+  }
+  if (typeof icon !== 'string' || !(PARTICIPANT_ICONS as readonly string[]).includes(icon)) {
+    return fail('invalid_field', `${key}.icon must be a known icon`);
+  }
+  return {
+    ok: true,
+    value: { color, icon } as ParticipantIdentity,
+  };
+}
+
+function parseRoomCreated(o: Obj): ParseResult<ServerMessage> {
+  const missing = requireFields(o, ['roomId', 'roomCode']);
+  if (missing) return missing;
+  const roomId = checkString(o, 'roomId');
+  if (!roomId.ok) return roomId;
+  if (!isRoomCode(o.roomCode)) return fail('invalid_field', 'roomCode must be 4 digits');
+  return { ok: true, value: { type: 'room_created', roomId: roomId.value, roomCode: o.roomCode } };
+}
+
+function parseRoomJoined(o: Obj): ParseResult<ServerMessage> {
+  const missing = requireFields(o, ['roomId', 'roomCode', 'you', 'participants']);
+  if (missing) return missing;
+  const roomId = checkString(o, 'roomId');
+  if (!roomId.ok) return roomId;
+  if (!isRoomCode(o.roomCode)) return fail('invalid_field', 'roomCode must be 4 digits');
+  const you = checkIdentity(o, 'you');
+  if (!you.ok) return you;
+  const list = o.participants;
+  if (!Array.isArray(list)) return fail('invalid_field', 'participants must be an array');
+  if (list.length < 1 || list.length > MAX_PARTICIPANTS) {
+    return fail('invalid_field', `participants must have 1 to ${MAX_PARTICIPANTS} entries`);
+  }
+  const participants: ParticipantIdentity[] = [];
+  for (const item of list as unknown[]) {
+    const id = checkIdentity({ item }, 'item');
+    if (!id.ok) return id;
+    participants.push(id.value);
+  }
+  return {
+    ok: true,
+    value: {
+      type: 'room_joined',
+      roomId: roomId.value,
+      roomCode: o.roomCode,
+      you: you.value,
+      participants,
+    },
+  };
+}
+
+function parseRoomLeft(o: Obj): ParseResult<ServerMessage> {
+  const missing = requireFields(o, ['roomId']);
+  if (missing) return missing;
+  const roomId = checkString(o, 'roomId');
+  if (!roomId.ok) return roomId;
+  return { ok: true, value: { type: 'room_left', roomId: roomId.value } };
+}
+
+function parseParticipantEvent(
+  o: Obj,
+  type: 'participant_joined' | 'participant_left',
+): ParseResult<ServerMessage> {
+  const missing = requireFields(o, ['roomId', 'participant']);
+  if (missing) return missing;
+  const roomId = checkString(o, 'roomId');
+  if (!roomId.ok) return roomId;
+  const participant = checkIdentity(o, 'participant');
+  if (!participant.ok) return participant;
+  return { ok: true, value: { type, roomId: roomId.value, participant: participant.value } };
+}
+
+function parseDrawingAdded(o: Obj): ParseResult<ServerMessage> {
+  const missing = requireFields(o, [
+    'roomId',
+    'drawingId',
+    'seq',
+    'sender',
+    'imageData',
+    'imageKey',
+  ]);
+  if (missing) return missing;
+  const roomId = checkString(o, 'roomId');
+  if (!roomId.ok) return roomId;
+  const drawingId = checkString(o, 'drawingId');
+  if (!drawingId.ok) return drawingId;
+  const seq = o.seq;
+  if (typeof seq !== 'number' || !Number.isInteger(seq) || seq < 1) {
+    return fail('invalid_field', 'seq must be an integer of 1 or greater');
+  }
+  const sender = checkIdentity(o, 'sender');
+  if (!sender.ok) return sender;
+  const imageData = checkNullableString(o, 'imageData');
+  if (!imageData.ok) return imageData;
+  const imageKey = checkNullableString(o, 'imageKey');
+  if (!imageKey.ok) return imageKey;
+  const base = {
+    type: 'drawing_added' as const,
+    roomId: roomId.value,
+    drawingId: drawingId.value,
+    seq,
+    sender: sender.value,
+  };
+  if (imageData.value !== null && imageKey.value === null) {
+    return { ok: true, value: { ...base, imageData: imageData.value, imageKey: null } };
+  }
+  if (imageData.value === null && imageKey.value !== null) {
+    return { ok: true, value: { ...base, imageData: null, imageKey: imageKey.value } };
+  }
+  return fail('invalid_field', 'exactly one of imageData or imageKey must be non-null');
+}
+
+// ---- 共通の入口 ----/** JSON を読み、オブジェクトであることと type の所属を確認する。throw しない。 */
 function readEnvelope(raw: string, types: readonly string[]): Check<{ obj: Obj; type: string }> {
   let data: unknown;
   try {
@@ -260,8 +414,14 @@ export function parseClientMessage(raw: string): ParseResult<ClientMessage> {
         return parseJoin(obj);
       case 'leave':
         return parseLeave(obj);
-      default:
+      case 'drawing_submit':
         return parseDrawingSubmit(obj);
+      case 'create_room':
+        return parseCreateRoom(obj);
+      case 'join_by_code':
+        return parseJoinByCode(obj);
+      default:
+        return fail('unknown_type', 'unknown message type');
     }
   } catch {
     return fail('internal_error', 'unexpected error while parsing');
@@ -282,8 +442,22 @@ export function parseServerMessage(raw: string): ParseResult<ServerMessage> {
         return parseAiText(obj, 'ai_prompt');
       case 'ai_card':
         return parseAiCard(obj);
-      default:
+      case 'error':
         return parseErrorMessage(obj);
+      case 'room_created':
+        return parseRoomCreated(obj);
+      case 'room_joined':
+        return parseRoomJoined(obj);
+      case 'room_left':
+        return parseRoomLeft(obj);
+      case 'participant_joined':
+        return parseParticipantEvent(obj, 'participant_joined');
+      case 'participant_left':
+        return parseParticipantEvent(obj, 'participant_left');
+      case 'drawing_added':
+        return parseDrawingAdded(obj);
+      default:
+        return fail('unknown_type', 'unknown message type');
     }
   } catch {
     return fail('internal_error', 'unexpected error while parsing');

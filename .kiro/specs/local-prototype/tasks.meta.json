@@ -24,6 +24,18 @@
         "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
         "timestamp": 1795654039729
       }
+    ],
+    "1.3 新メッセージのパーサーを `parser.ts` に追加する": [
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654043812
+      },
+      {
+        "executionId": "1e087eb2-5a7a-49bb-9d0f-87eb9e952a78",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795654606386
+      }
     ]
   }
 }
