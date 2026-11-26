@@ -33,6 +33,13 @@ inclusion: always
 - Bedrock は**1筆ごとに呼ばない**。「送信したとき」または「部屋全体で最短20秒に1回」に限る
 - AI の出力は短く(日本語40文字程度、やさしい言葉)。不適切な絵には反応せず、穏やかに話題を変える
 
+## 命名規約(AWS リソース)
+
+- アプリのスタック名は `DoodleNearby*` で始める(例: `DoodleNearbyWebStack`)
+- Web 用 S3 バケット名は `doodle-nearby-web-*` で始める(`infra/lib/constants.ts` の `WEB_BUCKET_PREFIX`)
+- `WebBucketName` / `WebDistributionId` を出力するスタックは `DoodleNearbyWebStack` という名前にする(`cd.yml` がこの名前で出力を読むため)
+- スタック出力名は `WebBucketName` / `WebDistributionId`。WebSocket API を作る場合は `WebSocketUrl` も出力する
+
 ## AWS の制約
 
 - すべてのリソースはプロジェクトの選択 Region に作る(`aws-starter-rules.md` に従う)

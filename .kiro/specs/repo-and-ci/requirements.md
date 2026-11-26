@@ -154,8 +154,8 @@
 1. THE Repository SHALL include `.github/pull_request_template.md` containing exactly three section headings: one for what changed, one for the Spec name and task number, and one for how the change was verified.
 2. WHEN a contributor opens a new pull request on the default branch, THE Repository SHALL pre-fill the pull request description with the contents of `.github/pull_request_template.md`.
 3. THE Repository SHALL include the `CODEOWNERS` file at `.github/CODEOWNERS`.
-4. THE `CODEOWNERS` file SHALL contain one entry for the path `packages/core/` that lists the GitHub usernames of all three team members as owners, with `@naota444`, `@takakisae`, and `@JTakahashi03` as the owners.
-5. THE `CODEOWNERS` file SHALL contain one entry for the path `.kiro/steering/` that lists the same three owners, with `@naota444`, `@takakisae`, and `@JTakahashi03` as the owners.
+4. THE `CODEOWNERS` file SHALL contain one entry for the path `packages/core/` that lists the GitHub usernames of all three team members as owners, with `@naota444`, `@takakisae`, and `@Takatyan03` as the owners.
+5. THE `CODEOWNERS` file SHALL contain one entry for the path `.kiro/steering/` that lists the same three owners, with `@naota444`, `@takakisae`, and `@Takatyan03` as the owners.
 6. WHERE branch protection (or a ruleset) on `main` requires Code Owner review with a required approving review count of 1, WHEN a pull request modifies a file under `packages/core/` or `.kiro/steering/`, THE Repository SHALL block merging until at least one listed code owner has approved.
 7. IF any username listed in `CODEOWNERS` is not a valid GitHub user or lacks write access to the repository, THEN THE Repository SHALL show a CODEOWNERS error on the file's GitHub page, and the owner entry is ignored for review requests.
 

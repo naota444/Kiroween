@@ -155,13 +155,13 @@
     - `ci.yml` と `cd.yml` のトップレベルに `defaults.run.shell == 'bash'` がある
     - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 5.1, 5.2, 5.5, 5.6, 5.7, 5.9, 5.11_
 
-- [ ] 9. 【トラック C】リポジトリ補助ファイルと steering 追記
-  - [ ] 9.1 PR テンプレートと CODEOWNERS を作る
+- [x] 9. 【トラック C】リポジトリ補助ファイルと steering 追記
+  - [x] 9.1 PR テンプレートと CODEOWNERS を作る
     - `.github/pull_request_template.md`: 見出しはちょうど3つ（`What changed`、`Spec and task`、`How it was verified`）
-    - `.github/CODEOWNERS`: `/packages/core/` と `/.kiro/steering/` の2行。所有者は `@naota444 @takakisae @JTakahashi03`
+    - `.github/CODEOWNERS`: `/packages/core/` と `/.kiro/steering/` の2行。所有者は `@naota444 @takakisae @Takatyan03`
     - _Requirements: 7.1, 7.3, 7.4, 7.5_
 
-  - [ ] 9.2 steering に追記する
+  - [x] 9.2 steering に追記する
     - `.kiro/steering/tech.md` の「重要なルール」の後に、AWS リソースの命名規約の節を追加する（アプリスタック名 `DoodleNearby*`、Web バケット名 `doodle-nearby-web-*`、出力 `WebBucketName` / `WebDistributionId`、必要なら `WebSocketUrl`）
     - `.kiro/steering/structure.md` のフォルダ構成の図に `tests/` 行を足し、`tests/repo/` がどのパッケージにも属さないリポジトリ全体の検査用であることを1〜2行で説明する
     - 既存の文面は変更せず、追記だけにする

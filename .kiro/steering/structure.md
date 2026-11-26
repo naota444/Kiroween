@@ -16,8 +16,12 @@ Kiroween/            # リポジトリのルート(.kiro はここに置く)
 ├─ backend/
 │  └─ lambdas/        # API Gateway WebSocket 用の Lambda(core を呼ぶだけ)
 ├─ infra/             # AWS CDK(TypeScript)
+├─ tests/
+│  └─ repo/           # リポジトリ全体の検査用テスト(構成・設定ファイルなど)
 └─ docs/              # デモ台本、審査用の説明
 ```
+
+`tests/repo/` はどのパッケージにも属さない、リポジトリ全体を検査するテスト置き場(ルートの Vitest 設定から実行する)。
 
 ## 命名
 

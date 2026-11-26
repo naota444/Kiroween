@@ -208,6 +208,37 @@
         "chatSessionId": "sess_b02a1dbe-48b1-4815-9787-2fab03fa2c2b",
         "timestamp": 1795651963996
       }
+    ],
+    "9.1 PR テンプレートと CODEOWNERS を作る": [
+      {
+        "executionId": "6fa69ad4-9d6b-40dd-9d4d-2847a515aaf9",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652290816
+      },
+      {
+        "executionId": "6fa69ad4-9d6b-40dd-9d4d-2847a515aaf9",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652427242
+      }
+    ],
+    "9.2 steering に追記する": [
+      {
+        "executionId": "6fa69ad4-9d6b-40dd-9d4d-2847a515aaf9",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652291141
+      },
+      {
+        "executionId": "6fa69ad4-9d6b-40dd-9d4d-2847a515aaf9",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652427329
+      }
+    ],
+    "9. 【トラック C】リポジトリ補助ファイルと steering 追記": [
+      {
+        "executionId": "6fa69ad4-9d6b-40dd-9d4d-2847a515aaf9",
+        "chatSessionId": "sess_7c10e90d-cb00-4aad-9bb8-f08e0032dba2",
+        "timestamp": 1795652427410
+      }
     ]
   }
 }
