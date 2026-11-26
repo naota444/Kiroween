@@ -8,6 +8,7 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@doodle-nearby/core": "*",
     "ws": "^8.23.0"
   },
   "devDependencies": {
