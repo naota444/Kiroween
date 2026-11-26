@@ -122,7 +122,7 @@ AWS を使わずに、スマホ2台(または PC とスマホ)で「近くの部
     - **Validates: Requirements 11.4, 11.5, 11.6, 14.1, 14.2**
     - 完了の確認: `npm.cmd test`
 
-- [ ] 2. チェックポイント - 共通の土台の確認
+- [x] 2. チェックポイント - 共通の土台の確認
   - `npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build` がルートで通ることを確認する。`encodeGeohash` と新メッセージ型・パーサーが `@doodle-nearby/core` の入口から import できることを確認する。
   - このチェックポイントが終わったら、W(タスク 3)と S(タスク 4)を並行して進められる。
   - Ensure all tests pass, ask the user if questions arise.
