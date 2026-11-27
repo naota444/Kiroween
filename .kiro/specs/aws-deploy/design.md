@@ -29,10 +29,15 @@ local-prototype の `RoomService` を、API Gateway WebSocket + Lambda + DynamoD
 | ブートストラップ | `CDKToolkit` は作成済み(ap-southeast-2、バージョン 34)。`GithubOidcStack` も作成済み | `ListStacks`、SSM |
 | Lambda の同時実行 | アカウントの上限は **1,000**(10 から引き上げ済み。`GetAccountSettings` で確認)。予約は設定しない | `GetAccountSettings` |
 | CDK の WebSocket | `aws-cdk-lib/aws-apigatewayv2` の `WebSocketApi` / `WebSocketStage` と、`aws-apigatewayv2-integrations` の `WebSocketLambdaIntegration` が使える | CDK の README |
+| 疎通 ①(CloudFront 経由) | `wss://<配信>/ws` で往復できた(2026-11-27、ap-southeast-2) | 使い捨てスタックでの疎通確認 |
+| 疎通 ②(管理 API の宛先) | Lambda の `domainName` は、CloudFront 経由でも execute-api のドメインで、`stage` は `ws`。`postToConnection` は成功した。管理 API の宛先を `domainName` と `stage` から作る設計(設計判断 8)の根拠になる(2026-11-27) | 同上 |
+| 疎通 ③(ヘッダー) | `Origin` ヘッダーは `$connect` に届いた。`Host` は転送されなかった(`ALL_VIEWER_EXCEPT_HOST_HEADER` が効いた。`Host` は execute-api のもの)(2026-11-27) | 同上 |
+| 疎通 ④(直接接続) | 直接の `wss://<apiId>.execute-api.<region>.amazonaws.com/ws` でも往復できた(2026-11-27) | 同上 |
+| 疎通 ⑤(権限) | `grantManageConnections` は循環参照なしで `synth` でき、この API だけに許可された(`execute-api:ManageConnections`)(2026-11-27) | 同上 |
 
 ### 未確認の点(実装の最初に確認する)
 
-1. **CloudFront 経由の WebSocket が、API Gateway(ステージ `ws`)まで通ること。** 設計の根拠は文書と事例で、このアカウントで動かした実績はない。最初のタスクで、空のハンドラーで疎通を確かめる(決定事項 1)
+1. **【確認済み 2026-11-27】CloudFront 経由の WebSocket が、API Gateway(ステージ `ws`)まで通ること。** 空のハンドラーで疎通を確かめ、往復できた(結果は上の「疎通 ①〜⑤」)。決定事項 1 の代替案は使わない
 2. `node_modules` が未インストールの作業環境では、CDK のバージョンと `esbuild` の有無を確認できなかった。実装の最初に `npm ci` して、`aws-cdk-lib` のバージョンと `OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER`、`NodejsFunction` の `esbuildArgs` を確認する
 3. 契約テストのスイート `runRoomStoreContract` は、S 側の `@doodle-nearby/core/testing` にすでにある。この Spec は使うだけで、作らない。`deletesImmediately` のオプションは S 側で追加される予定で、追加されるまで、タスク 3.5、3.6 は保留にする(タスク 2.2 で確認する)。`deleteExpired` は TTL に任せ、契約は `deletesImmediately: false` で通す。決定事項 4 を参照
 4. `RoomService` が `ports.roomsChanged` を `await` するか。この設計は、どちらでも動くようにしてある。`roomsChanged` は geohash を記録するだけで、一覧の送信はハンドラーが接続状態の保存のあとに行う。`send` の完了は `pending` で待つ(下の「ポートの実装」)
@@ -209,6 +214,7 @@ export function createPorts(args: {
 ```
 
 - `send(connectionId, message)`: `JSON.stringify` して `postToConnection`。`GoneException`(410)と他の失敗は、その接続だけ無視する。接続が消えていた場合は、その接続状態を削除する(要件 5.4)。送ったメッセージが `MAX_MESSAGE_BYTES` を超えるときは、送らずにログだけ残す(起きない想定。絵は 30,000 文字以内に制限済み)。返した `Promise` は `pending` にも積む。
+- **送信用クライアント**: `ApiGatewayManagementApiClient` は、宛先(`endpoint`)ごとに1回だけ作って使い回す(`sender` の内部でキャッシュする)。計測では、最初の送信が約 970ms、2回目が約 150ms だった。送信のたびに作ると、毎回この差を払う。
 - `roomsChanged(geohash)`: `changed` に geohash を足すだけ。DynamoDB にも API Gateway にも触れず、すぐ戻る。
 - `flusher.flush()`:
   1. `changed` の各 geohash について、`neighborCells(geohash)` の各マスで `connections.listSubscribers(cell)`(GSI、`CONN#`)を引く。
