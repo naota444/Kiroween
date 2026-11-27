@@ -37,8 +37,8 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
 
 ## Tasks
 
-- [ ] 1. 【最初・ほかに依存しない】CloudFront 経由の WebSocket の疎通(空のハンドラー)
-  - [ ] 1.1 使い捨ての疎通用アプリを作る
+- [x] 1. 【最初・ほかに依存しない】CloudFront 経由の WebSocket の疎通(空のハンドラー)
+  - [x] 1.1 使い捨ての疎通用アプリを作る
     - 触るファイル(新規。**コミットしない**。1.3 で削除する): `infra/spike/spike-app.ts`、`infra/spike/check.ts`
     - スタック名は `SpikeWsStack`。**`DoodleNearby*` で始めない**(CD が `cdk deploy 'DoodleNearby*'` で拾わないように)。`infra/bin/infra.ts` には足さず、`--app "npx tsx spike/spike-app.ts"` で単独に実行する
     - 中身: ステージ `ws` の WebSocket API、3ルートを受ける Lambda(`lambda.Code.fromInline`、Node.js 22、arm64)、CloudFront 配信(既定 behavior は何でもよい、`/ws` は `HttpOrigin('<apiId>.execute-api.<region>.amazonaws.com')`、`HTTPS_ONLY`、`CACHING_DISABLED`、`ALL_VIEWER_EXCEPT_HOST_HEADER`、`ALLOW_GET_HEAD`)
@@ -47,13 +47,13 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npx tsc --noEmit -p infra` と `cdk synth --app "npx tsx spike/spike-app.ts" --no-lookups`(`infra` ディレクトリ)が通る。まだデプロイしない
     - _Requirements: 2.1, 2.2, 2.5_
 
-  - [ ] 1.2 手動でデプロイして疎通を確かめる(所有者の認証情報。実行前に確認する)
+  - [x] 1.2 手動でデプロイして疎通を確かめる(所有者の認証情報。実行前に確認する)
     - `cd infra && npx cdk deploy SpikeWsStack --app "npx tsx spike/spike-app.ts"`(`--hotswap`、`--express` は使わない)。CloudFront の作成に数分〜15分かかる
     - `check.ts` を実行する。確認する点: ① CloudFront 経由で往復できる ② Lambda のログの `domainName` が CloudFront ではなく `execute-api` のドメインで、`postToConnection` が成功する(管理 API の宛先を `domainName` と `stage` から作る設計の根拠) ③ `Origin` ヘッダーが届く ④ 直接の URL でも往復できる
     - 通らない場合: 原因(`Host` の転送、パス、ポリシー)を切り分け、直らなければ**ここで止めて**所有者に決定事項 1 の代替案(`VITE_WS_URL` と `cd.yml` の変更)を相談する
     - _Requirements: 2.1, 2.2, 2.5_
 
-  - [ ] 1.3 結果を design に記録し、使い捨てのスタックとコードを削除する
+  - [x] 1.3 結果を design に記録し、使い捨てのスタックとコードを削除する
     - `cdk destroy SpikeWsStack`(所有者に確認してから)。削除が終わったことを `aws cloudformation describe-stacks` で確認する(`does not exist`)
     - `infra/spike/` を削除する(コミットしていないので履歴には残らない)
     - 触るファイル: `.kiro/specs/aws-deploy/design.md`(「調査で確認した事項」に、疎通の結果と日付、①〜④の結果を1行ずつ追記し、「未確認の点」の 1 を確認済みに直す。代替案を採る場合は決定事項 1 を書き換える)。**この修正だけで別のコミット**にする(Spec の修正)
