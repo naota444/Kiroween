@@ -1,3 +1,9 @@
 export const GITHUB_REPO = 'naota444/Kiroween';
 export const GITHUB_BRANCH = 'main';
 export const WEB_BUCKET_PREFIX = 'doodle-nearby-web-';
+export const WS_STAGE_NAME = 'ws';
+export const TTL_MARGIN_SECONDS = 3600;
+export const CONNECTION_TTL_SECONDS = 10800;
+export const DATA_STACK_NAME = 'DoodleNearbyDataStack';
+export const API_STACK_NAME = 'DoodleNearbyApiStack';
+export const WEB_STACK_NAME = 'DoodleNearbyWebStack';

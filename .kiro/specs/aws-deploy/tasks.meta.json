@@ -53,6 +53,13 @@
         "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
         "timestamp": 1795738654299
       }
+    ],
+    "2.1 依存と定数を足す": [
+      {
+        "executionId": "c0b08ee5-c3c6-46fe-a0ec-0e6945e1f115",
+        "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
+        "timestamp": 1795740013849
+      }
     ]
   }
 }

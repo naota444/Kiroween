@@ -61,7 +61,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - _Requirements: 2.5_
 
 - [ ] 2. 【基盤】依存、定数、S 側の契約テストを使う準備
-  - [ ] 2.1 依存と定数を足す
+  - [x] 2.1 依存と定数を足す
     - 触るファイル: `infra/lib/constants.ts`、`infra/package.json`、`backend/lambdas/package.json`、`package-lock.json`
     - `constants.ts` に追記: `WS_STAGE_NAME = 'ws'`、`TTL_MARGIN_SECONDS = 3600`、`CONNECTION_TTL_SECONDS = 10800`、スタック名 `DATA_STACK_NAME`、`API_STACK_NAME`、`WEB_STACK_NAME`(`DoodleNearbyDataStack` など)
     - `infra/package.json` の `devDependencies` に `esbuild` を**完全固定**で足す(入っていないと `NodejsFunction` が Docker に切り替わり、Docker のない CI の `synth` が落ちる)
