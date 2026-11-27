@@ -1,0 +1,58 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1.1 使い捨ての疎通用アプリを作る": [
+      {
+        "executionId": "5d44420c-1188-4305-b722-267fab2beaad",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795737117033
+      },
+      {
+        "executionId": "5d44420c-1188-4305-b722-267fab2beaad",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795737469740
+      }
+    ],
+    "1.2 手動でデプロイして疎通を確かめる(所有者の認証情報。実行前に確認する)": [
+      {
+        "executionId": "5d44420c-1188-4305-b722-267fab2beaad",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795737797575
+      },
+      {
+        "executionId": "4b466e73-9204-4047-991e-c11c29e537fe",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795737905414
+      },
+      {
+        "executionId": "4b466e73-9204-4047-991e-c11c29e537fe",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795738124903
+      }
+    ],
+    "1.3 結果を design に記録し、使い捨てのスタックとコードを削除する": [
+      {
+        "executionId": "4b466e73-9204-4047-991e-c11c29e537fe",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795738234746
+      },
+      {
+        "executionId": "29452b42-6621-4121-b274-a84c85938f08",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795738603265
+      },
+      {
+        "executionId": "29452b42-6621-4121-b274-a84c85938f08",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795738654158
+      }
+    ],
+    "1. 【最初・ほかに依存しない】CloudFront 経由の WebSocket の疎通(空のハンドラー)": [
+      {
+        "executionId": "29452b42-6621-4121-b274-a84c85938f08",
+        "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
+        "timestamp": 1795738654299
+      }
+    ]
+  }
+}
