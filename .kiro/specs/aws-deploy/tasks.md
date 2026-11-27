@@ -70,7 +70,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd install` のあと `npm.cmd ci`、`npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build`、`npm.cmd run synth -w infra`
     - _Requirements: 7.6, 9.8_
 
-  - [ ] 2.2 S 側の契約テストのスイートの状態を確認する(作らない)
+  - [x] 2.2 S 側の契約テストのスイートの状態を確認する(作らない)
     - S 側の `@doodle-nearby/core/testing` の `runRoomStoreContract(name, createStore, options?)` を、読んで確認するだけのタスク(コードは変えない)。**この Spec では契約テストを作らない。**
     - 確認する点: ① `@doodle-nearby/core/testing` から `runRoomStoreContract` が export されている(`createStore` は `RoomStore | Promise<RoomStore>` を返すファクトリ)。`index.ts` からは export されていない ② `MemoryRoomStore` で通っている ③ **`deletesImmediately` のオプションが入っているか。** 入る予定で、まだなら、タスク 3.5、3.6 を保留にして、S 側に状況を確認する。`DynamoDbRoomStore` は `deletesImmediately: false` で呼ぶ ④ 期限切れの `roomCode` の置き換えで、古い部屋と絵が消えることを求めているか(求めるなら、`createRoom` の後始末を省略しない) ⑤ 契約に不足がある(例: `listDrawings` の全ページ、競合のケース)場合は、S 側に追加を依頼する。この Spec では、タスク 3.5 の追加ケースとして書く
     - ③④の結果を、このタスクのコミットメッセージに書く。design の決定事項 4 と食い違う場合は、design を直す(Spec の修正として別コミット)
