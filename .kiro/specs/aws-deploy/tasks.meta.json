@@ -53,6 +53,27 @@
         "chatSessionId": "sess_00bf2757-371a-4ed1-bfe3-1e383e2c6594",
         "timestamp": 1795738654299
       }
+    ],
+    "2.1 依存と定数を足す": [
+      {
+        "executionId": "c0b08ee5-c3c6-46fe-a0ec-0e6945e1f115",
+        "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
+        "timestamp": 1795740013849
+      }
+    ],
+    "2.2 S 側の契約テストのスイートの状態を確認する(作らない)": [
+      {
+        "executionId": "698ff9bd-6ba9-423c-adf4-48e8e65bdb0d",
+        "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
+        "timestamp": 1795741024817
+      }
+    ],
+    "2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする": [
+      {
+        "executionId": "698ff9bd-6ba9-423c-adf4-48e8e65bdb0d",
+        "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
+        "timestamp": 1795741394718
+      }
     ]
   }
 }

@@ -6,5 +6,8 @@
   "scripts": {
     "build": "tsc -b",
     "synth": "cdk synth --no-lookups"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
   }
 }

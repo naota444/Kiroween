@@ -7,6 +7,9 @@
     "build": "tsc -b"
   },
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "3.1178.0",
+    "@aws-sdk/client-dynamodb": "3.1178.0",
+    "@aws-sdk/lib-dynamodb": "3.1178.0",
     "@doodle-nearby/core": "*"
   }
 }

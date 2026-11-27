@@ -61,7 +61,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - _Requirements: 2.5_
 
 - [ ] 2. 【基盤】依存、定数、S 側の契約テストを使う準備
-  - [ ] 2.1 依存と定数を足す
+  - [x] 2.1 依存と定数を足す
     - 触るファイル: `infra/lib/constants.ts`、`infra/package.json`、`backend/lambdas/package.json`、`package-lock.json`
     - `constants.ts` に追記: `WS_STAGE_NAME = 'ws'`、`TTL_MARGIN_SECONDS = 3600`、`CONNECTION_TTL_SECONDS = 10800`、スタック名 `DATA_STACK_NAME`、`API_STACK_NAME`、`WEB_STACK_NAME`(`DoodleNearbyDataStack` など)
     - `infra/package.json` の `devDependencies` に `esbuild` を**完全固定**で足す(入っていないと `NodejsFunction` が Docker に切り替わり、Docker のない CI の `synth` が落ちる)
@@ -70,7 +70,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd install` のあと `npm.cmd ci`、`npm.cmd run lint`、`npm.cmd run typecheck`、`npm.cmd test`、`npm.cmd run build`、`npm.cmd run synth -w infra`
     - _Requirements: 7.6, 9.8_
 
-  - [ ] 2.2 S 側の契約テストのスイートの状態を確認する(作らない)
+  - [x] 2.2 S 側の契約テストのスイートの状態を確認する(作らない)
     - S 側の `@doodle-nearby/core/testing` の `runRoomStoreContract(name, createStore, options?)` を、読んで確認するだけのタスク(コードは変えない)。**この Spec では契約テストを作らない。**
     - 確認する点: ① `@doodle-nearby/core/testing` から `runRoomStoreContract` が export されている(`createStore` は `RoomStore | Promise<RoomStore>` を返すファクトリ)。`index.ts` からは export されていない ② `MemoryRoomStore` で通っている ③ **`deletesImmediately` のオプションが入っているか。** 入る予定で、まだなら、タスク 3.5、3.6 を保留にして、S 側に状況を確認する。`DynamoDbRoomStore` は `deletesImmediately: false` で呼ぶ ④ 期限切れの `roomCode` の置き換えで、古い部屋と絵が消えることを求めているか(求めるなら、`createRoom` の後始末を省略しない) ⑤ 契約に不足がある(例: `listDrawings` の全ページ、競合のケース)場合は、S 側に追加を依頼する。この Spec では、タスク 3.5 の追加ケースとして書く
     - ③④の結果を、このタスクのコミットメッセージに書く。design の決定事項 4 と食い違う場合は、design を直す(Spec の修正として別コミット)
@@ -78,7 +78,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd test`(`MemoryRoomStore` の契約テストが通る)
     - _Requirements: 4.2, 4.8, 10.6_
 
-  - [ ] 2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする
+  - [x] 2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする
     - 前提: タスク 2.2
     - `backend/lambdas` のテストから `import { runRoomStoreContract } from '@doodle-nearby/core/testing'` が、型(`tsc -b`)と Vitest の両方で解決できることを確かめる。`./testing` の export、`coreAlias`、契約テストのファイルは**足さない・変えない**(S 側にある)
     - 解決できない場合だけ、`backend/lambdas` 側の設定(`vitest.config.ts` が `coreAlias` を使っているか、`tsconfig.json` の `references`)を直す。`packages/core` の変更が必要だと分かったら、変更せずに S 側へ依頼する
