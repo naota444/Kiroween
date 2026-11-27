@@ -78,7 +78,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd test`(`MemoryRoomStore` の契約テストが通る)
     - _Requirements: 4.2, 4.8, 10.6_
 
-  - [ ] 2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする
+  - [x] 2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする
     - 前提: タスク 2.2
     - `backend/lambdas` のテストから `import { runRoomStoreContract } from '@doodle-nearby/core/testing'` が、型(`tsc -b`)と Vitest の両方で解決できることを確かめる。`./testing` の export、`coreAlias`、契約テストのファイルは**足さない・変えない**(S 側にある)
     - 解決できない場合だけ、`backend/lambdas` 側の設定(`vitest.config.ts` が `coreAlias` を使っているか、`tsconfig.json` の `references`)を直す。`packages/core` の変更が必要だと分かったら、変更せずに S 側へ依頼する

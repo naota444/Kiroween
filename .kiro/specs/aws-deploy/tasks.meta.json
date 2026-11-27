@@ -67,6 +67,13 @@
         "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
         "timestamp": 1795741024817
       }
+    ],
+    "2.3 `backend/lambdas` から S 側の `@doodle-nearby/core/testing` を使えるようにする": [
+      {
+        "executionId": "698ff9bd-6ba9-423c-adf4-48e8e65bdb0d",
+        "chatSessionId": "sess_366d5b8b-6298-45fa-95f2-6ad423361a4e",
+        "timestamp": 1795741394718
+      }
     ]
   }
 }
