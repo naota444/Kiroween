@@ -145,7 +145,7 @@ flowchart LR
 | `listDrawings` | `Query`(`pk`、`sk begins_with DRAWING#`、昇順、`ConsistentRead`)。**`LastEvaluatedKey` が返らなくなるまで `ExclusiveStartKey` で繰り返し、全ページを連結して全件を返す**。1回の `Query` が返すのは最大 1MB で、50枚 × 約 30KB = 約 1.5MB の部屋は1回では収まらないため。途中で止めたり、`Limit` で切ったりしない。`listRoomsByGeohashes` と `listActiveRoomCodes`(`Scan`)も同じ | — |
 | `deleteExpired(now)` | **TTL に任せる。** 何も消さず `[]` を返す実装にする。読み取れる期限切れの部屋を消すかどうかは任意で、この Spec では入れない(期限切れの部屋は、`RoomService` が読み取り時に隠す)。契約テストは `deletesImmediately: false` で通す(決定事項 4) | — |
 
-`ExpressionAttributeNames` / `Values` は、純関数で組み立てる(`dynamo-keys.ts`)。接続 ID は `#c` で渡し、式に直接埋め込まない。
+`ExpressionAttributeNames` / `Values` は、純関数で組み立てる(`dynamo-keys.ts`)。属性名はすべてプレースホルダー(`#participants`、`#c` など)で渡し、式に直接埋め込まない(`ttl` などの予約語を避け、接続 ID を式に入れないため)。式で使った名前だけを `ExpressionAttributeNames` に入れる。
 
 #### 1.4 TTL
 
@@ -346,8 +346,8 @@ CD ロールが AWS に対して持つ権限は、既存のまま(ブートス�
 | Lambda のメモリ / タイムアウト | 256MB / 15秒 | `api-stack.ts` |
 | ステージのスロットリング | 20 req/秒、バースト 40(リスク 9 の決定) | `api-stack.ts` |
 | ログ保持 | 14日 | `api-stack.ts` |
-| `TTL_MARGIN_SECONDS` | 3,600 | `constants.ts` |
-| `CONNECTION_TTL_SECONDS` | 10,800 | `constants.ts` |
+| `TTL_MARGIN_SECONDS` | 3,600 | `infra/lib/constants.ts`、`backend/lambdas/src/ttl-constants.ts`(同じ値。`backend/lambdas` の `rootDir` は `src` で `infra` を import できないため複製し、`tests/repo/ttl-constants.test.ts` で一致を確かめる) |
+| `CONNECTION_TTL_SECONDS` | 10,800 | `infra/lib/constants.ts`、`backend/lambdas/src/ttl-constants.ts`(同上) |
 | 一斉送信の並行数 | 10 | `ports.ts` |
 | `TABLE_NAME` | 環境変数 | Lambda |
 
