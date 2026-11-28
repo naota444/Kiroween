@@ -94,7 +94,7 @@ CI(lint / typecheck / test / synth)は、各タスクの終わりに通る状態
     - 完了の確認: `npm.cmd run typecheck`、`npm.cmd run lint`
     - _Requirements: 4.1, 4.9, 5.1, 5.2, 6.1, 6.2_
 
-  - [ ] 3.2 項目の変換と TTL のプロパティテストを書く(必須①)
+  - [x] 3.2 項目の変換と TTL のプロパティテストを書く(必須①)
     - 触るファイル: `backend/lambdas/src/dynamo-keys.test.ts`(新規)
     - **Property 1: 項目と値の変換はラウンドトリップする**(参加者 0〜8 人、`geohash` あり / なしの `Room`、`StoredDrawing`、`ConnectionState`)。100ケース以上
     - **Property 2: TTL の範囲**(部屋・絵・予約は `expiresAt/1000` 以上、`+ TTL_MARGIN_SECONDS + 1` 以下。接続は `now/1000` より大きく `+ CONNECTION_TTL_SECONDS` 以下)
