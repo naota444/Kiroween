@@ -1,0 +1,160 @@
+.entry-screen {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.entry-screen__status {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+}
+
+.entry-screen__error {
+  font-size: 14px;
+  color: #ef4444;
+  text-align: center;
+}
+
+/* ---- Room list ---- */
+
+.room-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.room-list__empty {
+  font-size: 14px;
+  color: #666;
+  text-align: center;
+  padding: 16px 0;
+}
+
+.room-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.room-card:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.room-card__code {
+  font-weight: bold;
+  font-size: 18px;
+  letter-spacing: 2px;
+}
+
+.room-card__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  font-size: 12px;
+  color: #666;
+}
+
+.room-card__tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #f3f4f6;
+}
+
+.room-card__tag--full {
+  background: #fee2e2;
+  color: #ef4444;
+}
+
+/* ---- Keypad ---- */
+
+.keypad {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.keypad__digits {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.keypad__digit-box {
+  width: 48px;
+  height: 56px;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  background: #fff;
+}
+
+.keypad__digit-box--filled {
+  border-color: #3b82f6;
+}
+
+.keypad__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 64px);
+  gap: 8px;
+}
+
+.keypad__key {
+  height: 48px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keypad__key:active {
+  background: #e5e7eb;
+}
+
+/* ---- Buttons ---- */
+
+.btn {
+  padding: 12px 20px;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn--primary {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.btn--primary:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+.btn--secondary {
+  background: #f3f4f6;
+  color: #111;
+  border: 1px solid #d1d5db;
+}
